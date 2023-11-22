@@ -19,7 +19,7 @@ class ProductManager {
         this.productArray = this.readProductsFromFile() || [];
 
         // Agrega todos los productos iniciales a la matriz de productos
-        this.addProducts(initialProducts);
+      //  this.addProducts(initialProducts);
     }
 
     // Función hash para generar la identificación del producto
@@ -30,7 +30,7 @@ class ProductManager {
     }
 
     validateProduct(product) {
-       //Comprueba si el producto con el mismo código o ID ya existe
+        //Comprueba si el producto con el mismo código o ID ya existe
         this.generateID(product);
 
         const isCodeDuplicate = this.productArray.some(prod => prod.code === product.code);
@@ -39,25 +39,26 @@ class ProductManager {
         return !isCodeDuplicate && !isIDDuplicate;
     }
 
-    addProducts(data) {
-        data.forEach(product => {
-            this.addProduct(product);
-        });
+    async addProducts(data) {
+        for (const product of data) {
+            await this.addProduct(product);
+        }
     }
 
-    addProduct(product) {
+
+    async addProduct(product) {
         // Validar y agregar producto
         if (this.validateProduct(product)) {
             this.productArray.push(product);
-            this.writeProductsToFile();
+            await this.writeProductsToFile();
         } else {
             console.log(`The product "${product.title}" (with code ${product.code}) and ID ${product.id} already exists`);
         }
     }
 
-    readProductsFromFile() {
+    async readProductsFromFile() {
         try {
-            const data = fs.readFileSync(this.path, 'utf-8');
+            const data = await fs.promises.readFile(this.path, 'utf-8');
             return JSON.parse(data);
         } catch (error) {
             // Maneja el error de lectura del archivo o el archivo vacío
@@ -66,47 +67,59 @@ class ProductManager {
         }
     }
 
-    writeProductsToFile() {
+    async writeProductsToFile() {
         try {
-            fs.writeFileSync(this.path, JSON.stringify(this.productArray, null, 2), 'utf-8');
+            await fs.writeFile(this.path, JSON.stringify(this.productArray, null, 2), 'utf-8');
         } catch (error) {
             console.error('Error writing products file:', error.message);
         }
     }
 
-    getProducts() {
-        const products = this.readProductsFromFile() || [];
-        console.log(products);
+    async getProducts(limit) {
+        try {
+            const products = await this.readProductsFromFile() || [];
+    
+            if (limit) {
+                // Si se proporciona un límite, devolver solo la cantidad especificada de productos
+                return products.slice(0, limit);
+            } else {
+                // Si no se proporciona ningún límite, devolver todos los productos
+                return products;
+            }
+        } catch (error) {
+            console.error("Error getting products: ", error.message);
+            return null;
+        }
     }
 
-    updateProduct(id, data) {
+    async updateProduct(id, data) {
         let productIndex = this.productArray.findIndex(prod => prod.id === id);
 
         if (productIndex !== -1) {
             //Actualiza el producto encontrado con los nuevos datos
             this.productArray[productIndex] = { ...this.productArray[productIndex], ...data, id };
-            this.writeProductsToFile(); //Actualiza el archivo después de modificar la matriz
+            await this.writeProductsToFile(); //Actualiza el archivo después de modificar la matriz
         } else {
             console.log("Product not found");
         }
     }
 
-    deleteProductByID(id) {
+    async deleteProductByID(id) {
         const productIndex = this.productArray.findIndex(prod => prod.id === id);
 
         if (productIndex !== -1) {
             // Elimina el producto de la matriz
             this.productArray.splice(productIndex, 1);
-            this.writeProductsToFile(); //Actualiza el archivo después de modificar la matriz
+            await this.writeProductsToFile(); //Actualiza el archivo después de modificar la matriz
             console.log(`Product with ID ${id} deleted successfully.`);
         } else {
             console.log("Product not found.");
         }
     }
 
-    getProductByID(id) {
+    async getProductByID(id) {
         try {
-            const products = this.readProductsFromFile() || [];
+            const products = await this.readProductsFromFile() || [];
             const foundProduct = products.find(prod => prod.id === id);
 
             if (foundProduct) {
@@ -123,33 +136,27 @@ class ProductManager {
     }
 }
 
-const productManager = new ProductManager('./products.json');
+const instance = new ProductManager('./products.json');
 
-// Devuelve una matriz vacía si products.json está vacío
-productManager.getProducts();
+module.exports = { instance, ProductManager };
+/*
+// Devuelve una matriz vacía si products.json está vacía
+instance.getProducts();
 
 //Agrega un producto
-//productManager.addProduct({ title: "first item", description: "Product 5", price: 1000, thumbail: "null", code: "NÑO", id: "", stock: "" })
+//instance.addProduct({ title: "first item", description: "Product 5", price: 1000, thumbail: "null", code: "NÑO", id: "", stock: "" })
 
 //Devuelve una matriz con el producto agregado
-productManager.getProducts();
+instance.getProducts();
 
-// LOS IDS SERAN GENERADOS AUTOMATICAMENTE PARA CADA PRODUCTO LA PRIMERA VEZ QUE SE CORRA EL CODIGO, REVISAR EL ARCHIVO products.json Y REEMPLAZAR SEGUN CORRESPONDA
-
-// Actualiza un producto que exista en el archivo products.json por ID con un nuevo objeto (conservando el ID) 
-productManager.updateProduct("420906297FE196CB968C67471A43023B", { title: "Updated item", description: "update", price: 10000, thumbail: "null", code: "AABB", stock: "" })
-// Reemplazar el id con cualquier ID generado en los productos dentro del archivo products.json
-productManager.getProductByID("0D98CC05FDCB7252B4505B8BEB7B5AAD")
-
-// Fin de codigo
+//LOS IDS SERAN GENERADOS AUTOMATICAMENTE PARA CADA PRODUCTO LA PRIMERA VEZ QUE SE CORRA EL CODIGO, REVISAR EL ARCHIVO products.json Y REEMPLAZAR SEGUN CORRESPONDA
 
 
+// actualiza un producto que exista en el archivo products.json por ID con un nuevo objeto (conservando el ID) 
+instance.updateProduct("420906297FE196CB968C67471A43023B", { title: "Updated item", description: "update", price: 10000, thumbail: "null", code: "AABB", stock: "" })
+//reemplazar el id con cualquier ID generado en los productos dentro del archivo products.json
+instance.getProductByID("0D98CC05FDCB7252B4505B8BEB7B5AAD")
 
+*/
 
-
-
-
-
-
-
-
+//Fin de Codigo
