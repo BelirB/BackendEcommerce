@@ -1,10 +1,7 @@
 const initialProducts = [
-    { title: "first item", description: "Product 1", price: 200, thumbail: "null", code: "ABC", id: "", stock: "" },
-    { title: "second item", description: "Product 2", price: 400, thumbail: "null", code: "DEF", id: "", stock: "" },
-    { title: "third item", description: "Product 3", price: 600, thumbail: "null", code: "HIJ", id: "", stock: "" },
-    { title: "forth item", description: "Product 4", price: 800, thumbail: "null", code: "KLM", id: "", stock: "" },
-];
+    { title: "first item", description: "Product 1", code: "ABC", price: 200, stock: 0, thumbails: [""], category: "uncategorized", id: "", },
 
+];
 
 const fs = require('fs');
 const crypto = require('crypto');
@@ -14,13 +11,19 @@ class ProductManager {
         console.log("Product manager initialized");
 
         this.path = path;
-
         // Lee los productos iniciales del archivo o crea una matriz vacía
-        this.productArray = this.readProductsFromFile() || [];
+        this.initialize();
+    }
+
+    async initialize() {
+        // Lee los productos iniciales del archivo o crea una matriz vacía
+        const data = await this.readProductsFromFile();
+        this.productArray = data || [];
 
         // Agrega todos los productos iniciales a la matriz de productos
-      //  this.addProducts(initialProducts);
+        // espera a esto.addProducts(initialProducts);
     }
+
 
     // Función hash para generar la identificación del producto
     generateID(product) {
@@ -30,13 +33,27 @@ class ProductManager {
     }
 
     validateProduct(product) {
-        //Comprueba si el producto con el mismo código o ID ya existe
+        // Genera una identificación para este producto
         this.generateID(product);
+
+        // Comprobar si el producto tiene las propiedades obligatorias
+        if (!product.title || !product.description || !product.code || !product.price || !product.category ||parseInt(product.price) <= 0 || parseInt(product.stock) < 0) {
+           
+            return false;
+        }
 
         const isCodeDuplicate = this.productArray.some(prod => prod.code === product.code);
         const isIDDuplicate = this.productArray.some(prod => prod.id === product.id);
 
-        return !isCodeDuplicate && !isIDDuplicate;
+        // Compruebe si una ID o CÓDIGO está duplicada
+        if (isCodeDuplicate || isIDDuplicate) {
+            return false;
+        }
+
+
+        product.status = true;
+        // Devuelve true si todos los campos son válidos
+        return true;
     }
 
     async addProducts(data) {
@@ -47,12 +64,23 @@ class ProductManager {
 
 
     async addProduct(product) {
+        console.log("Attempting to add...");
+
         // Validar y agregar producto
         if (this.validateProduct(product)) {
+            // Puedes enviar directamente el objeto del producto a la matriz
             this.productArray.push(product);
+
             await this.writeProductsToFile();
+
+            if (product) {
+                console.log(`The product ${product.title} has been added successfully`);
+                return { success: true };
+            }
+
         } else {
             console.log(`The product "${product.title}" (with code ${product.code}) and ID ${product.id} already exists`);
+            return { success: false };
         }
     }
 
@@ -69,7 +97,7 @@ class ProductManager {
 
     async writeProductsToFile() {
         try {
-            await fs.writeFile(this.path, JSON.stringify(this.productArray, null, 2), 'utf-8');
+            await fs.promises.writeFile(this.path, JSON.stringify(this.productArray, null, 2), { encoding: 'utf-8' });
         } catch (error) {
             console.error('Error writing products file:', error.message);
         }
@@ -78,12 +106,12 @@ class ProductManager {
     async getProducts(limit) {
         try {
             const products = await this.readProductsFromFile() || [];
-    
+
             if (limit) {
-                // Si se proporciona un límite, devolver solo la cantidad especificada de productos
+                // Si se proporciona un límite, devuelve solo la cantidad especificada de productos
                 return products.slice(0, limit);
             } else {
-                // Si no se proporciona ningún límite, devolver todos los productos
+                // Si no se proporciona ningún límite, devuelve todos los productos
                 return products;
             }
         } catch (error) {
@@ -99,8 +127,11 @@ class ProductManager {
             //Actualiza el producto encontrado con los nuevos datos
             this.productArray[productIndex] = { ...this.productArray[productIndex], ...data, id };
             await this.writeProductsToFile(); //Actualiza el archivo después de modificar la matriz
+            console.log("Product updated successfully")
+            return { success: true };
         } else {
-            console.log("Product not found");
+            console.error("Product not found");
+            return { success: false };
         }
     }
 
@@ -108,12 +139,15 @@ class ProductManager {
         const productIndex = this.productArray.findIndex(prod => prod.id === id);
 
         if (productIndex !== -1) {
-            // Elimina el producto de la matriz
+            // Elimina el producto de la matriz.
             this.productArray.splice(productIndex, 1);
             await this.writeProductsToFile(); //Actualiza el archivo después de modificar la matriz
             console.log(`Product with ID ${id} deleted successfully.`);
+
+            return { success: true };
         } else {
             console.log("Product not found.");
+            return { success: false };
         }
     }
 
@@ -140,7 +174,7 @@ const instance = new ProductManager('./products.json');
 
 module.exports = { instance, ProductManager };
 /*
-// Devuelve una matriz vacía si products.json está vacía
+// Devuelve una matriz vacía si products.json está vacío
 instance.getProducts();
 
 //Agrega un producto
@@ -149,14 +183,14 @@ instance.getProducts();
 //Devuelve una matriz con el producto agregado
 instance.getProducts();
 
-//LOS IDS SERAN GENERADOS AUTOMATICAMENTE PARA CADA PRODUCTO LA PRIMERA VEZ QUE SE CORRA EL CODIGO, REVISAR EL ARCHIVO products.json Y REEMPLAZAR SEGUN CORRESPONDA
+LOS IDS SERAN GENERADOS AUTOMATICAMENTE PARA CADA PRODUCTO LA PRIMERA VEZ QUE SE CORRA EL CODIGO, REVISAR EL ARCHIVO products.json Y REEMPLAZAR SEGUN CORRESPONDA
 
 
-// actualiza un producto que exista en el archivo products.json por ID con un nuevo objeto (conservando el ID) 
+Actualiza un producto que exista en el archivo products.json por ID con un nuevo objeto (conservando el ID) 
 instance.updateProduct("420906297FE196CB968C67471A43023B", { title: "Updated item", description: "update", price: 10000, thumbail: "null", code: "AABB", stock: "" })
-//reemplazar el id con cualquier ID generado en los productos dentro del archivo products.json
+Reemplazar el id con cualquier ID generado en los productos dentro del archivo products.json
 instance.getProductByID("0D98CC05FDCB7252B4505B8BEB7B5AAD")
 
 */
 
-//Fin de Codigo
+//Fin de codigo
