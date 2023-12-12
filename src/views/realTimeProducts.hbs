@@ -1,28 +1,54 @@
 <main>
   <div class="swiper-container">
     <h3>PRODUCTOS EN TIEMPO REAL</h3>
-    <div class="swiper-wrapper">
+    <div class="swiper-wrapper" id="swiper">
       {{#each product}}
-        <div class="swiper-slide">
-          <img src={{this.thumbnail}}>
-          <p class="sw-title">{{this.title}}</p>
-          <p class="sw-price">Precio: $ {{this.price}}</p>
-          <p class="sw-code">Código: {{this.code}}</p>
-        </div>
+      <div class="swiper-slide">
+        <img src={{this.thumbnail}}>
+        <p class="sw-title">{{this.title}}</p>
+        <p class="sw-price">Precio: $ {{this.price}}</p>
+        <p class="sw-code">Código: {{this.code}}</p>
+        <button onclick="deletePrd('{{this.code}}')">Eliminar</button>
+      </div>
       {{/each}}
     </div>
     <div class="swiper-pagination"></div>
   </div>
 
-  <div class="formCarga">
-    <form>
-      <input type="text">
-      <input type="text">
-      <input type="number">
-      <input type="submit">
-    </form>
-  </div>
+
+  <form id="formRTP" class="formRTP">
+    <div class="formcol">
+      <div>
+        <label for="frimage">Dirección Imagen</label>
+        <input type="text" name="frimage" id="frimage" value="https://i.postimg.cc/9Mg0gJxR/pcbasica.png">
+      </div>
+      <div>
+        <label for="frtitle">Producto</label>
+        <input type="text" name="frtitle" id="frtitle" value='EJEMPLO PC'>
+      </div>
+      <div>
+        <label for="frcat">Categoria</label>
+        <input type="text" name="frcat" id="frcat" value="Armada">
+      </div>
+      <div>
+        <label for="frprice">Precio</label>
+        <input type="number" name="frprice" id="frprice" value="2087902">
+      </div>
+      <div>
+        <label for="frstock">Stock</label>
+        <input type="number" name="frstock" id="frstock" value="2">
+      </div>
+      <div>
+        <label for="frcode">Código del Producto</label>
+        <input type="text" name="frcode" id="frcode" value="PRUEBA01">
+      </div>
+      <input class="frButton" type="submit" value="Cargar Producto" id="frButton">
+    </div>
+  </form>
+
 </main>
 
 <script src={{scriptPlus}}></script>
 <script src={{scriptView}}></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="./js/realTimeProducts.js"></script>

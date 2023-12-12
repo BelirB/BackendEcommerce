@@ -1,57 +1,57 @@
 [
-    {
-      "id": 0,
-      "title": "PC Oficina",
-      "description": "PC Armada Hogar/Oficina Kit Celeron J4005I-C /8GB /240GB /Gabinete + Fuente 500w",
-      "code": "MEBC21RR030052G",
-      "status": true,
-      "price": 1989600,
-      "stock": 20,
-      "category": "Pcs",
-      "thumbnail": "https://i.postimg.cc/SRVrP0BL/pcoficina.png"
-    },
-    {
-      "id": 1,
-      "title": "PC Basica",
-      "description": "UPC Armada Gamer Basic I3 10105F /GT 1030 2G /B560M /8GB /240GB /Gabinete + Fuente 550W",
-      "code": "CUB22RTATPR850G",
-      "status": true,
-      "price": 2096799,
-      "stock": 15,
-      "category": "Pcs",
-      "thumbnail": "https://i.postimg.cc/9Mg0gJxR/pcbasica.png"
-    },
-    {
-      "id": 2,
-      "title": "PC Medium",
-      "description": "PC Armada Gamer Medium Ryzen 5 5600G /B550M /16GB /480GB /Gabinete /Fuente 650W 80P",
-      "code": "CUB22RGNUPR850G",
-      "status": true,
-      "price": 2524099,
-      "stock": 10,
-      "category": "Pcs",
-      "thumbnail": "https://i.postimg.cc/zv9B83Yq/pcmedium.png"
-    },
-    {
-      "id": 3,
-      "title": "PC Elite",
-      "description": "PC Armada Gamer Elite Ryzen 5 5500 /RX 6600 8GB /A520M /16GB /480GB /Gabinete /Fuente 550W 80P /Entrega Inmediata",
-      "code": "1006392",
-      "status": true,
-      "price": 3456776,
-      "stock": 30,
-      "category": "PcsX",
-      "thumbnail": "https://i.postimg.cc/Gmn2fBjQ/pcelite.png"
-    },
-    {
-      "id": 4,
-      "title": "PC Extreme",
-      "description": "PC Armada Gamer Extreme I7 11700F /Cooler /RTX 4070 /B560M /16GB /1TB /Gabinete /Fuente 750W 80P",
-      "code": "CUB22MHELIO918P",
-      "status": true,
-      "price": 6619300,
-      "stock": 5,
-      "category": "PcsX",
-      "thumbnail": "https://i.postimg.cc/BQKbN52b/pcextreme-copia.png"
-    }
-  ]
+  {
+    "id": 0,
+    "title": "PC Oficina",
+    "description": "PC Armada Hogar/Oficina Kit Celeron J4005I-C /8GB /240GB /Gabinete + Fuente 500w",
+    "code": "MEBC21RR030052G",
+    "status": true,
+    "price": 1067894,
+    "stock": 20,
+    "category": "Pcs",
+    "thumbnail": "https://i.postimg.cc/SRVrP0BL/pcoficina.png"
+  },
+  {
+    "id": 1,
+    "title": "PC Basica",
+    "description": "UPC Armada Gamer Basic I3 10105F /GT 1030 2G /B560M /8GB /240GB /Gabinete + Fuente 550W",
+    "code": "CUB22RTATPR850G",
+    "status": true,
+    "price": 2096799,
+    "stock": 15,
+    "category": "Pcs",
+    "thumbnail": "https://i.postimg.cc/9Mg0gJxR/pcbasica.png"
+  },
+  {
+    "id": 2,
+    "title": "PC Medium",
+    "description": "PC Armada Gamer Medium Ryzen 5 5600G /B550M /16GB /480GB /Gabinete /Fuente 650W 80P",
+    "code": "CUB22RGNUPR850G",
+    "status": true,
+    "price": 2524099,
+    "stock": 10,
+    "category": "Pcs",
+    "thumbnail": "https://i.postimg.cc/zv9B83Yq/pcmedium.png"
+  },
+  {
+    "id": 3,
+    "title": "PC Elite",
+    "description": "PC Armada Gamer Elite Ryzen 5 5500 /RX 6600 8GB /A520M /16GB /480GB /Gabinete /Fuente 550W 80P /Entrega Inmediata",
+    "code": "1006392",
+    "status": true,
+    "price": 3456776,
+    "stock": 30,
+    "category": "PcsX",
+    "thumbnail": "https://i.postimg.cc/Gmn2fBjQ/pcelite.png"
+  },
+  {
+    "id": 4,
+    "title": "PC Extreme",
+    "description": "PC Armada Gamer Extreme I7 11700F /Cooler /RTX 4070 /B560M /16GB /1TB /Gabinete /Fuente 750W 80P",
+    "code": "CUB22MHELIO918P",
+    "status": true,
+    "price": 6619300,
+    "stock": 5,
+    "category": "PcsX",
+    "thumbnail": "https://i.postimg.cc/BQKbN52b/pcextreme-copia.png"
+  }
+]
