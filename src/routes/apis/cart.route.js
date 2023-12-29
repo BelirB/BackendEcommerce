@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { CartMongo } = require('../daos/mongo/cart.daomongo');
+const { CartMongo } = require('../../daos/mongo/cart.daomongo');
 
 const router = Router();
 //const carrito = new CartManager('./src/daos/file/mock/Carts.json');
@@ -31,6 +31,28 @@ router.post('/', async (req, res) => {
     status: 'ok',
     payload: result,
   });
+});
+
+// PUT http://localhost:8080/api/carts/:cid
+router.put('/:cid', async (req, res) => {
+  const cid = req.params.cid;
+  const array = req.body
+
+  console.log(cid, array);
+
+  const resp = await carrito.updateCart(cid, array);
+
+  if (typeof resp === 'string') {
+    res.status(400).json({
+      status: 'fail',
+      data: resp,
+    });
+  } else {
+    res.status(200).json({
+      status: 'ok',
+      data: resp,
+    });
+  }
 });
 
 // POST http://localhost:8080/api/carts/:cid/product/:pid
@@ -72,4 +94,5 @@ router.delete('/:cid/product/:pid', async (req, res) => {
     });
   }
 });
+
 exports.cartsRouter = router;

@@ -1,4 +1,4 @@
-const { ObjectId } = require('bson');
+//const { ObjectId } = require('bson');
 const { productModel } = require('./models/products.model.js');
 
 class ProductDaoMongo {
@@ -6,24 +6,36 @@ class ProductDaoMongo {
     this.model = productModel;
   }
 
-  getProducts = async () => {
+  getProducts = async (filters) => {
+    //console.log(filters);
+    const query = filters.query
+
+    if ( !(filters.sort===1) && !(filters.sort===-1) && !(filters.sort==='asc') & !(filters.sort==='desc') ) { filters.sort = null }
+
+    const filter = { limit: filters.limit*1, page: filters.page }
+    if (filters.sort) {filter["sort"] = filters.sort}
+
+    //console.log(query, filter);
+
     try {
-      return await this.model.find().lean();
+      return await this.model.paginate(query, filter)
     } catch (error) {
       console.log(error);
+      return 'Hubo un error en la petición'
     }
   };
 
   getProductsById = async (pid) => {
     try {
-      //return await this.model.find({ _id: new ObjectId(pid) });
-      return await this.model.find({ _id: pid });
+      const result = await this.model.find({ _id: pid});
+      if ( result.length === 0) {return "Producto no encontrado"}
+      return result
     } catch (error) {
       console.log(error);
+      return "Ha ocurrido un error al buscar el producto"
     }
   };
   
-  // FIXME: falta la validacion cuando el codigo esta repetido
   addProduct = async ({ title, description, code, price, stock, status = true, category, thumbnail }) => {
     try {
       if ( !title || !description || !code || !price || !stock || !status || !category || !thumbnail) {
@@ -38,12 +50,6 @@ class ProductDaoMongo {
         return 'ERROR: debe completar todos los campos';
       }
 
-      // const exists = this.model.findOne({code});
-      // console.log(exists);
-      // if (exists) {
-      //   return 'ERROR: codigo repetido';
-      // }
-
       const newProduct = {
         title: title,
         description: description,
@@ -56,35 +62,64 @@ class ProductDaoMongo {
       };
 
       return await this.model.create(newProduct)
+
     } catch (error) {
-      console.log(error);
+      if (error.code === 11000) { return 'ERROR: codigo repetido' }
+      return 'Verificar ERROR de mongoose codigo: '+error.code
     }
   };
 
-  // FIXME: falta la validacion cuando el codigo no existe
   updateProduct = async (pid, changedProduct) => {
+    const updateProd = await this.getProductsById(pid)
+
+    if(updateProd.length === 0 ) { return 'Producto no encontrado'  }
+
     try {
-      return await this.model.updateOne({_id: new ObjectId(pid)}, changedProduct)
+      await this.model.updateOne({_id: pid}, changedProduct)
+      return await this.getProductsById(pid)
     } catch (error) {
+      if (error.code === 11000) { return 'ERROR: esta queriendo ingresar un codigo repetido' }
       console.log(error);
+      return error
     };
   };
 
-  // FIXME: falta la validacion cuando el codigo no existe
   deleteProductById = async (pid) => {
+    const deleteProd = await this.getProductsById(pid)
+    
+    if(deleteProd.length === 0 ) { return 'Producto no encontrado'  }
     try {
-      return await this.model.deleteOne({ _id: new ObjectId(pid) });
+      await this.model.deleteOne({ _id: pid })
+      return deleteProd
     } catch (error) {
       console.log(error);
+      return "Hubo un error en la peticion"
     }
   }
 
-  // FIXME: falta la validacion cuando el codigo no existe
   deleteProductByCode = async (pcode) => {
+    const productoEliminado = await this.model.find({ code: pcode });
+
+    if(productoEliminado.length === 0 ) { return 'Producto no encontrado'  }
     try {
-      return await this.model.deleteOne({ code: pcode });
+      await this.model.deleteOne({ code: pcode });
+      return productoEliminado
     } catch (error) {
-      console.log(error);
+      return "Hubo un error en el la peticion"
+    }
+  }
+
+  getCategorys = async () => {
+    try {
+      const list = await this.model.aggregate([
+        {$group: {"_id": "$category"}}
+      ])
+      const arrayCategory = list.map( (x) => {
+        return x._id
+      })
+      return arrayCategory
+    } catch (error) {
+      return "Ocurrio un Error"
     }
   }
 }
