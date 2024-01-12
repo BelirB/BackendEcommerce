@@ -25,19 +25,19 @@
       </div>
       <div>
         <label for="frtitle">Producto</label>
-        <input type="text" name="frtitle" id="frtitle" value='EJEMPLO PC'>
+        <input type="text" name="frtitle" id="frtitle" value='EJEMPLO BICICLETA'>
       </div>
       <div>
         <label for="frcat">Categoria</label>
-        <input type="text" name="frcat" id="frcat" value="Armada">
+        <input type="text" name="frcat" id="frcat" value="Ruta">
       </div>
       <div>
         <label for="frprice">Precio</label>
-        <input type="number" name="frprice" id="frprice" value="2087902">
+        <input type="number" name="frprice" id="frprice" value="1198299">
       </div>
       <div>
         <label for="frstock">Stock</label>
-        <input type="number" name="frstock" id="frstock" value="2">
+        <input type="number" name="frstock" id="frstock" value="15">
       </div>
       <div>
         <label for="frcode">Código del Producto</label>
@@ -45,11 +45,13 @@
       </div>
       <input class="frButton" type="submit" value="Cargar Producto" id="frButton">
     </div>
+    <p id="errorAlerts" class="alert"></p>
   </form>
 
 </main>
 
-<script src={{scriptPlus}}></script>
-<script src={{scriptView}}></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="./js/realTimeProducts.js"></script>
+
+

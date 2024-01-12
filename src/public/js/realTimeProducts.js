@@ -4,6 +4,14 @@ const socket = io();
 
 const divSwiper = d.querySelector('#swiper');
 const formRTP = d.querySelector('#formRTP');
+const errorAlerts = d.querySelector('#errorAlerts');
+
+var swiper = new Swiper('.swiper-container', {
+  slidesPerView: 5,
+  pagination: {
+    el: ".swiper-pagination",
+  },
+});
 formRTP.addEventListener('submit', (event) => {
   event.preventDefault();
 
@@ -53,4 +61,11 @@ function escuchar() {
       },
     });
   });
+
+  socket.on('error', (message) => {
+    errorAlerts.innerHTML = message;
+    setTimeout(() => {
+      errorAlerts.innerHTML = '';
+    },5000)
+  })
 }

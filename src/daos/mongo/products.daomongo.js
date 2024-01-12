@@ -1,4 +1,5 @@
-//const { ObjectId } = require('bson');
+const { CustomError } = require('../../helpers/errors.js');
+const { validateFields } = require('../../helpers/functions.js');
 const { productModel } = require('./models/products.model.js');
 
 class ProductDaoMongo {
@@ -6,122 +7,166 @@ class ProductDaoMongo {
     this.model = productModel;
   }
 
-  getProducts = async (filters) => {
-    //console.log(filters);
-    const query = filters.query
-
-    if ( !(filters.sort===1) && !(filters.sort===-1) && !(filters.sort==='asc') & !(filters.sort==='desc') ) { filters.sort = null }
-
-    const filter = { limit: filters.limit*1, page: filters.page }
-    if (filters.sort) {filter["sort"] = filters.sort}
-
-    //console.log(query, filter);
-
+  getProducts = async (reqQuery, reqOptions) => {
+    const context = 'getProducts';
+    
     try {
-      return await this.model.paginate(query, filter)
+      // Validación de parámetros
+      if (!reqQuery || typeof reqQuery !== 'object') {
+        throw new CustomError('The "query" parameter is invalid',400,context);
+      }
+      if (!reqOptions || typeof reqOptions !== 'object') {
+        throw new CustomError('The "options" parameter is invalid',400,context);
+      }
+
+      const query = reqQuery || {};
+      const options = {
+        limit: Number(reqOptions.limit) || 10,
+        page: Number(reqOptions.page) || 1,
+      };
+
+      if (reqQuery.category) {
+        const categories = await this.getCategorys();
+        if (categories.includes(reqQuery.category)) {
+          query.category = reqQuery.category;
+        }
+      }
+
+      if (reqQuery.availability) {
+        query.stock = { $gt: 0 };
+      }
+
+      const sortOptions = {
+        '1': 1,
+        '-1': -1,
+        asc: 'asc',
+        desc: 'desc',
+      };
+      const sortValue  = sortOptions[reqOptions.sort];
+      if (sortValue ) options.sort = { price: sortValue } ;
+
+      return await this.model.paginate(query, options);
     } catch (error) {
-      console.log(error);
-      return 'Hubo un error en la petición'
+      console.error(error);
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        throw new CustomError('Unidentified error', 500, context);
+      }
     }
   };
 
   getProductsById = async (pid) => {
     try {
-      const result = await this.model.find({ _id: pid});
-      if ( result.length === 0) {return "Producto no encontrado"}
-      return result
+      const product = await this.model.findById({ _id: pid }).lean();
+      return product
+
     } catch (error) {
-      console.log(error);
-      return "Ha ocurrido un error al buscar el producto"
-    }
-  };
-  
-  addProduct = async ({ title, description, code, price, stock, status = true, category, thumbnail }) => {
-    try {
-      if ( !title || !description || !code || !price || !stock || !status || !category || !thumbnail) {
-        if (!title) return 'ERROR: debe completar el titulo';
-        if (!description) return 'ERROR: debe completar la descripción';
-        if (!code) return 'ERROR: debe completar el Código';
-        if (!price) return 'ERROR: debe completar el Precio';
-        if (!stock) return 'ERROR: debe completar el Stock';
-        if (!status) return 'ERROR: debe completar el Estado';
-        if (!category) return 'ERROR: debe completar la Categoria';
-        if (!thumbnail) return 'ERROR: debe completar la Imagen';
-        return 'ERROR: debe completar todos los campos';
+      console.error(error);
+      if (error instanceof CustomError) {
+        throw error;
+      } else {
+        throw new CustomError('Unidentified error', 500, context);
       }
 
-      const newProduct = {
-        title: title,
-        description: description,
-        code: code,
-        price: price,
-        status: status,
-        stock: stock,
-        category: category,
-        thumbnail: thumbnail,
-      };
+    }
+  };
 
-      return await this.model.create(newProduct)
+  addProduct = async (fields) => {
+    const requiredFields = [
+      'title',
+      'description',
+      'code',
+      'price',
+      'stock',
+      'status',
+      'category',
+      'thumbnail',
+    ];
+    try {
+      const newProduct = validateFields(fields, requiredFields);
+      if (typeof newProduct === 'string') {
+        return newProduct;
+      }
 
+      return await this.model.create(newProduct);
     } catch (error) {
-      if (error.code === 11000) { return 'ERROR: codigo repetido' }
-      return 'Verificar ERROR de mongoose codigo: '+error.code
+      if (error instanceof CustomError) {
+        error.addContext('addProduct');
+        throw error;
+      } else if (error.code === 11000) {
+        // Si es un error de código duplicado en MongoDB
+        throw new CustomError(`ERROR: Código repetido`, 400, 'addProduct');
+      } else {
+        // Para otros errores no controlados
+        throw new CustomError(
+          `Verificar ERROR de mongoose código: ${error.code}`,
+          400,
+          'addProduct',
+        );
+      }
     }
   };
 
   updateProduct = async (pid, changedProduct) => {
-    const updateProd = await this.getProductsById(pid)
+    const updateProd = await this.getProductsById(pid);
 
-    if(updateProd.length === 0 ) { return 'Producto no encontrado'  }
+    if (updateProd.length === 0) {
+      return 'Producto no encontrado';
+    }
 
     try {
-      await this.model.updateOne({_id: pid}, changedProduct)
-      return await this.getProductsById(pid)
+      await this.model.updateOne({ _id: pid }, changedProduct);
+      return await this.getProductsById(pid);
     } catch (error) {
-      if (error.code === 11000) { return 'ERROR: esta queriendo ingresar un codigo repetido' }
-      console.log(error);
-      return error
-    };
+      if (error.code === 11000) {
+        return 'ERROR: esta queriendo ingresar un codigo repetido';
+      }
+      return 'ERROR: se ha producido une error al modificar el producto';
+    }
   };
 
   deleteProductById = async (pid) => {
-    const deleteProd = await this.getProductsById(pid)
-    
-    if(deleteProd.length === 0 ) { return 'Producto no encontrado'  }
-    try {
-      await this.model.deleteOne({ _id: pid })
-      return deleteProd
-    } catch (error) {
-      console.log(error);
-      return "Hubo un error en la peticion"
+    const deleteProd = await this.getProductsById(pid);
+
+    if (deleteProd.length === 0) {
+      return 'Producto no encontrado';
     }
-  }
+    try {
+      await this.model.deleteOne({ _id: pid });
+      return deleteProd;
+    } catch (error) {
+      return 'Hubo un error en la peticion';
+    }
+  };
 
   deleteProductByCode = async (pcode) => {
     const productoEliminado = await this.model.find({ code: pcode });
 
-    if(productoEliminado.length === 0 ) { return 'Producto no encontrado'  }
+    if (productoEliminado.length === 0) {
+      return 'Producto no encontrado';
+    }
     try {
       await this.model.deleteOne({ code: pcode });
-      return productoEliminado
+      return productoEliminado;
     } catch (error) {
-      return "Hubo un error en el la peticion"
+      return 'Hubo un error en el la peticion';
     }
-  }
+  };
 
   getCategorys = async () => {
     try {
-      const list = await this.model.aggregate([
-        {$group: {"_id": "$category"}}
-      ])
-      const arrayCategory = list.map( (x) => {
-        return x._id
-      })
-      return arrayCategory
+      const categories = await this.model.aggregate([
+        { $group: { _id: '$category' } },
+        { $sort: { _id: 1 } },
+      ]);
+      return categories.map((x) => {
+        return x._id;
+      });
     } catch (error) {
-      return "Ocurrio un Error"
+      return 'Ocurrio un Error';
     }
-  }
+  };
 }
 
 exports.ProductMongo = ProductDaoMongo;
