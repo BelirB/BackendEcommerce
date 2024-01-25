@@ -1,226 +1,165 @@
-const { Router } = require('express');
-const { ProductMongo } = require('../daos/mongo/products.daomongo.js');
-const { CustomError } = require('../helpers/index.js');
-const { authentication } = require('../middleware/auth.middleware.js');
+import "dotenv/config";
+import { Router } from "express";
+import { ProductClass } from "../daos/index.js";
+import { renderPage } from "../helpers/index.js";
+
 const router = Router();
 
-const productsMongo = new ProductMongo();
+const productsMongo = new ProductClass();
 
-router.get('/', async (req, res) => {
-  //res.redirect('/products');
+router.get("/", (req, res) => {
   try {
-    res.render('login', {
-      title: 'Login',
-    });
+    renderPage(res, "login", "Login");
   } catch (error) {
     console.error(error);
-    res.render('error', {
-      title: 'Error',
-      message: 'Ocurrio un error, vuelva a intentarlo',
-      code: error.statusCode || 500,
-    });
+    renderPage(
+      res,
+      "error",
+      "Error",
+      { control: { message: "Ocurrio un error, vuelva a intentarlo" }}
+    );
   }
-});
+}); //OK
 
-router.get('/register', async (req, res) => {
+router.get("/register", (req, res) => {
   try {
-    res.render('register', {
-      title: 'Registrase',
-    });
+    renderPage(res, "register", "Nuevo Registro");
   } catch (error) {
     console.error(error);
-    res.render('error', {
-      title: 'Error',
-      message: 'Ocurrio un error, vuelva a intentarlo',
-      code: error.statusCode || 500,
-    });
+    renderPage(
+      res,
+      "error",
+      "Error",
+      { control: { message: "Ocurrio un error, vuelva a intentarlo" }}
+    );
   }
-});
+}); //OK
 
-router.get('/products', authentication, async (req, res) => {
+router.get("/products", async (req, res) => {
   try {
     // handle url API products
-    const { page = 1, sort, category, availability } = req.query;
-    const apiUrl = new URL('http://localhost:8080/api/products');
-    apiUrl.searchParams.set('page', page);
-    apiUrl.searchParams.set('limit', '5');
-    if (sort) apiUrl.searchParams.set('sort', sort);
-    if (category) apiUrl.searchParams.set('category', category);
-    if (availability) apiUrl.searchParams.set('availability', availability);
+    const {
+      page = 1,
+      sort,
+      category: initialCategory,
+      availability = true,
+    } = req.query;
+    const category = initialCategory === "all" ? null : initialCategory;
+    const apiUrl = new URL(`http://localhost:${process.env.PORT}/api/products`);
+    apiUrl.searchParams.set("page", page);
+    apiUrl.searchParams.set("limit", "5");
+    if (sort) apiUrl.searchParams.set("sort", sort);
+    if (category) apiUrl.searchParams.set("category", category);
+    if (availability) apiUrl.searchParams.set("availability", availability);
 
-    let resp = await fetch(apiUrl);
-    data = await resp.json();
+    const data = await (await fetch(apiUrl)).json();
 
-    if (data.error || page > data.totalPages || page < 0) {
-      return res.render('products', {
-        title: 'Productos',
-        pageError: true,
-        productError: data.error,
+    if (
+      data.error ||
+      Number(page) > Number(data.data.totalPages) ||
+      Number(page) < 0
+    ) {
+      return renderPage(res, "products", "Productos", {
+        control: { productError: true },
       });
     }
 
     // update product
     const product = data.data.docs.map((prd) => ({
       ...prd,
-      price: prd.price.toLocaleString('es-ES', { style: 'decimal' }),
+      price: prd.price.toLocaleString("es-ES", { style: "decimal" }),
       unavailability: prd.stock === 0,
       link: `/products/${prd._id}`,
     }));
 
-    const arrayString = req.url.split('?')[1]?.split('&') || [];
+    const filterUrl = (filter) => {
+      const params = new URLSearchParams(req.url.split("?")[1] || "");
+      params.delete(filter);
+      params.delete("page");
+      return `/products?${params}`;
+    };
 
-    function filterUrl(filter) {
-      return `/products?${
-        arrayString
-          .filter((elm) => ![filter, 'page'].includes(elm.split('=')[0]))
-          .join('&') || ''
-      }`;
-    }
-
-    res.render('products', {
-      title: 'Inicio',
-      userName: req.session?.user?.first_name,
-      userRole: req.session?.user?.role,
-      productError: false,
-      product,
-      page: data.page,
-      totalPages: data.totalPages,
-      hasPrevPage: data.hasPrevPage,
-      hasNextPage: data.hasNextPage,
-      prevLink: `${filterUrl('x')}${data.prevLink}`,
-      nextLink: `${filterUrl('x')}${data.nextLink}`,
-      category: await productsMongo.getCategorys(),
-      ascend: `${filterUrl('sort')}sort=asc`,
-      descend: `${filterUrl('sort')}sort=desc`,
-      disorderly: `${filterUrl('sort')}sort=disorderly`,
-      availability: `${filterUrl('availability')}availability=false`,
-      unavailability: `${filterUrl('availability')}availability=true`,
-      url: filterUrl('category'),
+    renderPage(res, "products", "Productos", {
+      user: {
+        userName: req.session?.user?.first_name,
+        userRole: req.session?.user?.role,
+      },
+      control: {
+        productError: false,
+      },
+      arrays: {
+        product,
+        category: await productsMongo.getCategorys(),
+      },
+      pageControl: {
+        page: data.data.page,
+        totalPages: data.data.totalPages,
+        hasPrevPage: data.data.hasPrevPage,
+        hasNextPage: data.data.hasNextPage,
+        prevLink: filterUrl("page") + data.data.prevLink,
+        nextLink: filterUrl("page") + data.data.nextLink,
+        ascend: filterUrl("sort") + "&sort=asc",
+        descend: filterUrl("sort") + "&sort=desc",
+        disorderly: filterUrl("sort") + "&sort=disorderly",
+        availability: filterUrl("availability") + "&availability=false",
+        unavailability: filterUrl("availability") + "&availability=true",
+        url: filterUrl("category"),
+      },
     });
   } catch (error) {
     console.error(error);
-    res.render('error', {
-      title: 'Error',
-      message: 'Ocurrio un error, vuelva a intentarlo',
-      code: error.statusCode || 500,
-    });
+    renderPage(
+      res,
+      "error",
+      "Error",
+      {},
+      { message: "Ocurrio un error, vuelva a intentarlo" },
+    );
   }
-});
+}); //OK
 
-router.get('/products/:pid', async (req, res) => {
+router.get("/products/:pid", async (req, res) => {
   try {
-    const pid = req.params.pid;
+    const { pid } = req.params;
     const apiUrl = `http://localhost:8080/api/products/${pid}`;
 
-    const resp = await fetch(apiUrl);
-    const { error, data } = await resp.json();
+    const { error, data } = await (await fetch(apiUrl)).json();
 
-    const objectRender = {
-      title: 'Producto',
-      userName: req.session?.user?.first_name,
-      userRole: req.session?.user?.role,
-      productError: error,
-      product: data,
-      cart: '6591b1a1419b33fbcb57e2b1',
-    };
-    res.render('product', objectRender);
+    renderPage(
+      res,
+      "product",
+      "Producto",
+      {
+        user: {
+          userName: req.session?.user?.first_name,
+          userRole: req.session?.user?.role,
+        },
+        control: {
+          productError: error,
+        },
+        arrays: {
+          product: data,
+        },
+      },
+      { cart: "6591b1a1419b33fbcb57e2b1" },
+    );
+
   } catch (error) {
     console.error(error);
-    res.render('error', {
-      title: 'Error',
-      message: 'Ocurrió un error, vuelve a intentarlo',
-      code: error.statusCode || 500,
-    });
+    renderPage(
+      res,
+      "error",
+      "Error",
+      {},
+      { message: "Ocurrio un error, vuelva a intentarlo" },
+    );
   }
-});
+});//OK
 
-// falta optimizar
-router.get('/cart', async (req, res) => {
-  const objectRender = {
-    title: 'Carrito',
-    userName: req.session?.user?.first_name,
-    userRole: req.session?.user?.role,
-  };
-  let resp = await await fetch(
-    `http://localhost:8080/api/carts/6591b1a1419b33fbcb57e2b1`,
-  );
-  resp = await resp.json();
-  const cart = resp.data;
-  const products = cart.products;
-  products.forEach((prd) => {
-    prd['total'] = prd.product.price * prd.quantity;
-  });
+router.get("/cart", (req, res) => res.render("cart")); // RE HACIENDO
 
-  if (resp.status == 'ok') {
-    objectRender['cartError'] = false;
-    objectRender['cartId'] = cart._id;
+router.get("/realTimeProducts", (req, res) => res.render("realTimeProducts")); // RE HACIENDO
 
-    if (products.length != 0) {
-      objectRender['cartNoEmpty'] = true;
-      objectRender['products'] = products;
-    }
-  } else {
-    objectRender['cartError'] = true;
-  }
+router.get("/chat", (req, res) => res.render("chat")); // RE HACIENDO
 
-  res.render('cart', objectRender);
-});
-
-router.get('/realTimeProducts', async (req, res) => {
-  try {
-    const apiUrl = 'http://localhost:8080/api/products?limit=100';
-    const resp = await fetch(apiUrl);
-    const data = await resp.json();
-
-    const product = data.data.docs.map((prd) => ({
-      ...prd,
-      price: prd.price.toLocaleString('es-ES', { style: 'decimal' }),
-    }));
-
-    res.render('realTimeProducts', {
-      title: 'Productos en tiempo Real',
-      product,
-      cssPlus: `https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css`,
-    });
-  } catch (error) {
-    console.error(error);
-    res.render('error', {
-      title: 'Error',
-      userName: req.session?.user?.first_name,
-      userRole: req.session?.user?.role,
-      message: 'Ocurrió un error, vuelve a intentarlo',
-      code: error.statusCode || 500,
-    });
-  }
-});
-
-router.get('/chat', async (req, res) => {
-  res.render('chat', {
-    title: 'Chat',
-    userName: req.session?.user?.first_name,
-    userRole: req.session?.user?.role
-  });
-});
-
-router.get('/user', async (req, res) => {
-  try {
-    res.render('user', {
-      title: 'Usuario',
-      userName: req.session?.user?.first_name,
-      first_name: req.session?.user?.first_name,
-      last_name: req.session?.user?.last_name,
-      email: req.session?.user?.email,
-      userRole: req.session?.user?.role
-    });
-  } catch (error) {
-    console.error(error);
-    res.render('error', {
-      title: 'Error',
-      userName: req.session?.user?.first_name,
-      message: 'Ocurrió un error, vuelve a intentarlo',
-      code: error.statusCode || 500,
-    });
-  }
-});
-
-exports.viewsRouter = router;
+export default router;

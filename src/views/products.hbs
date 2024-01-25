@@ -9,8 +9,8 @@
         <div class="groupFilter">
           <p class="titleFilter">CATEGEGORIAS</p>
           <div>
-            <a href="/?category=all">Todas</a>
-            {{#each category}}<a href="/?category={{this}}">{{this}}</a>{{/each}}
+            <a href="/products?category=all">Todas</a>
+            {{#each category}}<a href="/products?category={{this}}">{{this}}</a>{{/each}}
           </div>
         </div>
         <div class="groupFilter">
@@ -44,6 +44,6 @@
         <p id="pages"><span id="thisPage">{{page}}</span> de <span id="totalPages">{{totalPages}}</span></p>
         {{#if hasNextPage}}<a id="nextPage" href="{{nextLink}}"><i class='bx bx-chevrons-right'></i></a>{{/if}}
       </div>
-    {{/if}} <!-- end productError -->
+    {{/if}}
   </div>
 </main>

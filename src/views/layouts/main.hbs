@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -28,8 +29,8 @@
         <ul>
           {{#unless userName}}<li> <a href="/">Inicio</a></li>{{/unless}}
           <li> <a href="/products">Productos</a></li>
-          {{#if userName}}<li> <a href="/realTimeProducts">Tiempo Real</a></li>
-          <li> <a href="/chat">Chat</a></li>{{/if}}
+          {{#if userName}}<li> <a href="/realTimeProducts">Tiempo Real</a></li>{{/if}}
+          <li> <a href="/chat">Chat</a></li>
         </ul>
       </div>
       <div class="navDiv">
@@ -47,7 +48,11 @@
     <div id="copyright">
     </div>
   </footer>
+
   <script src="/js/index.js"></script>
+  {{#if userName}}<script src="/js/logout.js"></script>{{/if}}
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

@@ -28,7 +28,7 @@ exports.sessionAtlas = (app) => {
         ttl: 3600, // milisegundos --> hs
       }),
       secret:"secreto",
-      //resave: true,
+      resave: true,
       saveUninitialized: true,
     })
   );

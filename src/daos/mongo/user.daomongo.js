@@ -1,4 +1,4 @@
-const { usersModel } = require('./models/user.model.js');
+import usersModel from "./models/user.model.js";
 
 class UserDaoMongo {
   constructor() {
@@ -15,4 +15,4 @@ class UserDaoMongo {
   deleteUser = async (uid) => await this.model.findOneAndDelete({_id: uid})
 }
 
-exports.UserMongo = UserDaoMongo;
+export default UserDaoMongo;

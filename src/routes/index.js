@@ -1,16 +1,21 @@
-const { Router } = require('express')
-const { viewsRouter } = require('./views.route.js');
-const { productsRouter, cartsRouter, sessionRouter, messagesRouter } = require('./apis');
+import { Router } from "express";
+import viewsRouter from './views.route.js'
+import { productsRoute, sessionsRoute } from "./api/index.js";
 
 const router = Router()
 
 // definiendo vistas
 router.use('/', viewsRouter);
 
-// definiendo la API
-router.use('/api/products/', productsRouter);
-router.use('/api/carts/', cartsRouter);
-router.use('/api/sessions/', sessionRouter);
-router.delete('/api/messages', messagesRouter);
+// definiendo las API
+router.use('/api/products/', productsRoute);
+router.use('/api/carts/', ()=>{});
 
-module.exports = router
+router.use('/api/sessions/', sessionsRoute);
+router.delete('/api/messages', ()=>{});
+
+// router.get("/pruebas", (req, res) => {
+//   res.send(createHash(""))
+// })
+
+export default router;

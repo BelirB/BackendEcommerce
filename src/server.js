@@ -1,36 +1,45 @@
-require('dotenv').config();
+import 'dotenv/config'
+import express from 'express';
 
-const express = require('express');
-const { createServer } = require('node:http');
-const serverIo = require('./middleware/serverIO.js');
+import {createServer} from 'node:http'
+// const serverIo = require('./middleware/serverIO.js');
 
-const { connectDB, sessionAtlas } = require('./config/index.js');
+import appRouter from './routes/index.js'
+import { __dirname } from './helpers/index.js';
+import handlebars from 'express-handlebars';
+import { connectDB, sessionAtlas } from './config/index.js'
+import passport from 'passport';
+import initializePassport from './config/passport.config.js';
 
-const handlebars = require('express-handlebars');
-const appRouter = require('./routes');
-
-const port = 8080;
+const port = process.env.PORT;
 const app = express();
 const server = createServer(app);
-
-serverIo(server);
-connectDB();
-sessionAtlas(app);
 
 // configuraciones de la App
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+// serverIo(server);
+connectDB();
+
+// session
+sessionAtlas(app);
+
+// passport
+initializePassport()
+app.use(passport.initialize())
+
+// handlebars
 app.engine('hbs', handlebars.engine({ extname: '.hbs' }));
 app.set('view engine', 'hbs');
 app.set('views', __dirname + '/views');
 
 app.use(appRouter);
 
-// Confirmacion de inicio
 server.listen(port, () => {
   console.log(`Server andando en port ${port}`);
 });
+
 
 //INICIAR: npm run dev:npm
