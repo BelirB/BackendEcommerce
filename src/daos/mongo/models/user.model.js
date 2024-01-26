@@ -1,5 +1,5 @@
-const {Schema, model} = require('mongoose')
-const mongososePaginate = require('mongoose-paginate-v2')
+import { Schema, model } from 'mongoose'
+import mongososePaginate from 'mongoose-paginate-v2'
 
 const usersSchema = Schema({
     first_name: {
@@ -24,4 +24,4 @@ const usersSchema = Schema({
 
 usersSchema.plugin(mongososePaginate)
 
-exports.usersModel = model('usuarios', usersSchema)
+export default model('usuarios', usersSchema)
