@@ -7,11 +7,11 @@ import {
   resJson,
 } from "../../helpers/index.js";
 
-const router = Router();
+const productsRoute = Router();
 const products = new ProductClass();
 
 // GET http://localhost:PORT/api/products + ? limit, page, sort, query
-router.get("/", async (req, res) => {
+productsRoute.get("/", async (req, res) => {
   try {
     let {
       limit = 10,
@@ -68,7 +68,7 @@ router.get("/", async (req, res) => {
 });
 
 // GET http://localhost:PORT/api/products/:pid
-router.get("/:pid", async (req, res) => {
+productsRoute.get("/:pid", async (req, res) => {
   try {
     const { pid } = req.params;
     const product = await products.getProductsById(pid);
@@ -95,7 +95,7 @@ router.get("/:pid", async (req, res) => {
 });
 
 // POST http://localhost:PORT/api/products/ + body: whole product
-router.post("/", async (req, res) => {
+productsRoute.post("/", async (req, res) => {
   const newProduct = req.body;
 
   try {
@@ -118,7 +118,7 @@ router.post("/", async (req, res) => {
 });
 
 // PUT http://localhost:PORT/api/products/:pid + body: whole product
-router.put("/:pid", async (req, res) => {
+productsRoute.put("/:pid", async (req, res) => {
   try {
     const pid = req.params.pid;
     const changedProduct = req.body;
@@ -152,7 +152,7 @@ router.put("/:pid", async (req, res) => {
 });
 
 // DELETE http://localhost:PORT/api/products/:pid
-router.delete("/:pid", async (req, res) => {
+productsRoute.delete("/:pid", async (req, res) => {
   try {
     const pid = req.params.pid;
 
@@ -185,7 +185,7 @@ router.delete("/:pid", async (req, res) => {
 });
 
 // DELETE http://localhost:PORT/api/products?code=x
-router.delete("/", async (req, res) => {
+productsRoute.delete("/", async (req, res) => {
   try {
     const pcode = req.query.code;
 
@@ -218,7 +218,7 @@ router.delete("/", async (req, res) => {
 });
 
 // GET http://localhost:PORT/api/products/group/categorys
-router.get("/group/categorys", async (req, res) => {
+productsRoute.get("/group/categorys", async (req, res) => {
   try {
     const resp = await products.getCategorys();
     resJson(res, 200, resp);
@@ -237,4 +237,4 @@ router.get("/group/categorys", async (req, res) => {
   }
 });
 
-export default router;
+export default productsRoute;

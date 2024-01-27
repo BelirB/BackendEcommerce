@@ -1,10 +1,10 @@
-require('dotenv').config();
+import 'dotenv/config';
 
 //conexion Mongo Atlas a traves de mongoose
 //-------------------------------------------------------------------
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-exports.connectDB = async () => {
+export const connectDB = async () => {
   await mongoose.connect(
     // `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.ktawedp.mongodb.net/ecommerce?retryWrites=true&w=majority`,
     `${process.env.MONGO_URL}`,
@@ -14,10 +14,10 @@ exports.connectDB = async () => {
 
 //conexion Mongo Atlas session
 //-------------------------------------------------------------------
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
-exports.sessionAtlas = (app) => {
+export const sessionAtlas = (app) => {
   app.use(
     session({
       store: MongoStore.create({
@@ -27,7 +27,7 @@ exports.sessionAtlas = (app) => {
         },
         ttl: 3600, // milisegundos --> hs
       }),
-      secret:"secreto",
+      secret: process.env.SECRET_CODE,
       resave: true,
       saveUninitialized: true,
     })
