@@ -1,17 +1,12 @@
 import { Router } from "express";
 import { ProductClass } from "../../daos/index.js";
-import {
-  CustomError,
-  resCatchError,
-  resError,
-  resJson,
-} from "../../helpers/index.js";
-
-const productsRoute = Router();
+import { resCatchError, resError, resJson } from "../../helpers/responses.js";
+import CustomError from "../../utils/errors.js";
+const router = Router();
 const products = new ProductClass();
 
 // GET http://localhost:PORT/api/products + ? limit, page, sort, query
-productsRoute.get("/", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     let {
       limit = 10,
@@ -68,7 +63,7 @@ productsRoute.get("/", async (req, res) => {
 });
 
 // GET http://localhost:PORT/api/products/:pid
-productsRoute.get("/:pid", async (req, res) => {
+router.get("/:pid", async (req, res) => {
   try {
     const { pid } = req.params;
     const product = await products.getProductsById(pid);
@@ -95,7 +90,7 @@ productsRoute.get("/:pid", async (req, res) => {
 });
 
 // POST http://localhost:PORT/api/products/ + body: whole product
-productsRoute.post("/", async (req, res) => {
+router.post("/", async (req, res) => {
   const newProduct = req.body;
 
   try {
@@ -118,7 +113,7 @@ productsRoute.post("/", async (req, res) => {
 });
 
 // PUT http://localhost:PORT/api/products/:pid + body: whole product
-productsRoute.put("/:pid", async (req, res) => {
+router.put("/:pid", async (req, res) => {
   try {
     const pid = req.params.pid;
     const changedProduct = req.body;
@@ -152,7 +147,7 @@ productsRoute.put("/:pid", async (req, res) => {
 });
 
 // DELETE http://localhost:PORT/api/products/:pid
-productsRoute.delete("/:pid", async (req, res) => {
+router.delete("/:pid", async (req, res) => {
   try {
     const pid = req.params.pid;
 
@@ -185,7 +180,7 @@ productsRoute.delete("/:pid", async (req, res) => {
 });
 
 // DELETE http://localhost:PORT/api/products?code=x
-productsRoute.delete("/", async (req, res) => {
+router.delete("/", async (req, res) => {
   try {
     const pcode = req.query.code;
 
@@ -218,7 +213,7 @@ productsRoute.delete("/", async (req, res) => {
 });
 
 // GET http://localhost:PORT/api/products/group/categorys
-productsRoute.get("/group/categorys", async (req, res) => {
+router.get("/group/categorys", async (req, res) => {
   try {
     const resp = await products.getCategorys();
     resJson(res, 200, resp);
@@ -237,4 +232,4 @@ productsRoute.get("/group/categorys", async (req, res) => {
   }
 });
 
-export default productsRoute;
+export default router;

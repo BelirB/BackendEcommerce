@@ -1,28 +1,27 @@
-import "dotenv/config";
+import configObject from "../../config/index.js";
 import { Router } from "express";
-import {
-  CustomError,
-  validateFields,
-  renderPage,
-  resJson,
-  resError,
-  resCJason
-} from "../../helpers/index.js";
-import { UserClass } from "../../daos/index.js";
-import { createHash, isValidPassword } from "../../helpers/passwords.js";
 import passport from "passport";
-import { authenticationToken, createToken } from "../../helpers/jwt.js";
-import passportCall from "../../helpers/passportCall.js";
-import authPJwt from '../../middleware/jwtPassport.middleware.js'
+import { UserClass } from "../../daos/index.js";
+
+import createToken from "../../utils/createToken.js";
+import authPJwt from "../../helpers/jwt/authorization.middleware.js";
+import passportCall from "../../helpers/jwt/passportCall.middleware.js";
+
+import handleResponses from "../../middleware/handleResponses.js";
+import { handleAuth, handleAuthFront } from "../../middleware/handlePoliciesPASP.js";
+//import { resCookieJson, resError } from "../../helpers/responses.js"; // reemplazado por middleware
+
+import { createHash, isValidPassword } from "../../utils/passwords.js";
+import CustomError from "../../utils/errors.js";
+import validateFields from "../../utils/validatefiels.js";
 
 const router = Router();
-
 const users = new UserClass();
 
-// POST http://localhost:PORT/api/sessions/register
-router.post('/register', async (req, res) => {
+// * POST http://localhost:PORT/api/sessions/register
+router.post('/register', handleResponses, async (req, res) => {
   try {
-    const requieredfield = ['first_name', 'last_name', 'email', 'password'];
+    const requieredfield = ['first_name', 'last_name', 'email', 'birthday', 'password'];
     const userData = validateFields(req.body, requieredfield);
     userData.password = createHash(userData.password)
 
@@ -30,36 +29,64 @@ router.post('/register', async (req, res) => {
 
     if (userFound) throw new CustomError(`Ya existe un usuario con ese email. pruebe con otro`,400,'POST /api/sessions/register')
 
-    const user = await users.createUser(userData)
+    await users.createUser(userData)
 
-    renderPage(res,"login","Login",{control: {answer: 'Se ha registrado satisfactoriamente' }});
+    res.renderPage("login","Login", {answer: 'Se ha registrado satisfactoriamente' })
 
   } catch (error) {
     console.error(error);
     if (error instanceof CustomError) {
-      renderPage(res,"register","Nuevo Registro",{control: {answer: error.message }});
+      res.renderPage("register","Nuevo Registro", {answer: error.message })
     } else {
-      renderPage(res,"register","Nuevo Registro",{control: {answer: 'Ocurrio un error, vuelva a intentarlo'}});
+      res.renderPage("register","Nuevo Registro", {answer: 'Ocurrio un error, vuelva a intentarlo' })
     }
   }
 });
 
-// POST http://localhost:PORT/api/sessions/login
-router.post('/login', async (req, res) => {
+// * POST http://localhost:PORT/api/sessions/login
+router.post('/login', handleResponses, async (req, res) => {
   const requieredfield = ['email', 'password'];
   const userData = validateFields(req.body, requieredfield);
 
   try {
-    if (userData.email == process.env.USER_ADMIN && isValidPassword(userData.password, {password: process.env.USER_ADMIN_PASS}) ) {
-      // req.session.user = {
-      //   first_name: "Admin",
-      //   email: userData.email,
-      //   role: "Admin"
-      // };
+    if (userData.email == configObject.uadmin && isValidPassword(userData.password, {password: configObject.uadmin_pass}) ) {
+
       const token = createToken({id: 0, role: "Admin"})
-      resJson(res, 200, "Log In exitoso", token)
-      // res.token = token
-      // return res.redirect('/products');
+      return res.sendTokenCookieSucess(token, "Log In exitoso con Id: "+0)
+    }
+
+    const userFound = await users.getUserByMail(userData.email);
+
+    if (!userFound || !isValidPassword(userData.password, userFound)) {
+      throw new CustomError(`Email o contraseña equivocado`,400,'POST /api/sessions/login');
+    }
+    
+    const token = createToken({id: userFound._id, role: userFound.role})
+    res.sendTokenCookieSucess(token, "Log In exitoso con Id: "+userFound._id)
+
+  } catch (error) {
+    console.error(error);
+    if (error instanceof CustomError) {
+      res.sendUserError(error)
+    } else {
+      res.sendServerError(error)
+    }
+  }
+});
+
+// DEPRECADO POST http://localhost:PORT/api/sessions/login
+router.post('/loginSession', async (req, res) => {
+  const requieredfield = ['email', 'password'];
+  const userData = validateFields(req.body, requieredfield);
+
+  try {
+    if (userData.email == configObject.uadmin && isValidPassword(userData.password, {password: configObject.uadmin_pass}) ) {
+      req.session.user = {
+        first_name: "Admin",
+        email: userData.email,
+        role: "Admin"
+      };
+      return res.redirect('/products');
     }
 
     const userFound = await users.getUserByMail(userData.email);
@@ -67,52 +94,57 @@ router.post('/login', async (req, res) => {
       throw new CustomError(`Email o contraseña equivocado`,400,'POST .../api/sessions/login');
     }
     
-    // req.session.user = {
-    //   user: userFound._id,
-    //   first_name: userFound.first_name,
-    //   last_name: userFound.last_name,
-    //   email: userFound.email,
-    //   role: userFound.role,
-    // };
-    const token = createToken({id: userFound._id, role: userFound.role})
-    resCJason(res, 200, "Log In exitoso", token)
-    //resJson(res, 200, "Log In exitoso", token)
-        // res.token = token
-    // res.redirect('/products');
+    req.session.user = {
+      user: userFound._id,
+      first_name: userFound.first_name,
+      last_name: userFound.last_name,
+      email: userFound.email,
+      role: userFound.role,
+    };
+    
+    res.redirect('/products');
 
   } catch (error) {
     console.error(error);
     if (error instanceof CustomError) {
-      resError(res, 400, "Email o contraseña equivocado")
+      //resError(res, 400, "Email o contraseña equivocado")
+      res.sendUserError(error)
     } else {
-      resError(res, 500, "Ocurrio un error, vuelva a intentarlo")
+      //resError(res, 500, "Ocurrio un error, vuelva a intentarlo")
+      res.sendServerError(error)
     }
   }
 });
 
-// GET http://localhost:PORT/api/sessions/github
+// * GET http://localhost:PORT/api/sessions/github
 router.get('/github', passport.authenticate('github', {scope:['user:email']}), async (req,res)=>{})
 
-// GET http://localhost:PORT/api/sessions/githubcallhub
-router.get('/githubcallback', passport.authenticate('github', {failureRedirect: '/'}),(req, res)=>{
-  req.session.user = req.user
-
-  // const token = createToken({id: req.user._id, role: req.user.role})
-  // resJson(res, 200, "Log In a traves de Github exitoso", token)
-  res.redirect('/products');
+// * GET http://localhost:PORT/api/sessions/githubcallhub
+router.get('/githubcallback', handleResponses, passport.authenticate('github', {session: false, failureRedirect: '/'}),(req, res)=>{
+  //req.session.user = req.user
+  const token = createToken({id: req.user._id, role: req.user.role})
+  
+  res.tokenCookie(token).redirect('/products');
 })
 
-// GET http://localhost:PORT/api/sessions/logout
+// * GET http://localhost:PORT/api/sessions/logout
 router.get('/logout', (req, res) => {
-  req.session.destroy((err) => {
+  /*req.session.destroy((err) => {
     if (err) return res.send({ status: 'error', error: err });
-  });
-  res.redirect('/');
+  });*/
+  res.clearCookie('token').redirect('/');
 });
 
-// GET http://localhost:PORT/api/sessions/current
-router.get('/current', passportCall('jwt'),authPJwt('admin'),(req, res) => {
-  res.send({message: "Datos sensibles", reqUser: req.user})
+// ? GET http://localhost:PORT/api/sessions/current
+router.get('/current', handleAuthFront(['USER']), handleResponses, (req, res) => {
+//router.get('/current', handleResponses, passportCall('jwt'), /*authPJwt('admin'),*/ (req, res) => {
+  try{
+    const datosP = {message: "Datos sensibles", reqUser: req.user}
+    res.renderPage('current', 'PRUEBA', {contenido: JSON.stringify(datosP)}) 
+  } catch (error) {
+    let message = error.error
+    return res.renderPage('error', 'Ha ocurrido un error', {message}) 
+  }
 })
 
 export default router;
