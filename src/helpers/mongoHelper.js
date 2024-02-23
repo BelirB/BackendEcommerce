@@ -1,4 +1,4 @@
-import { ProductClass } from "../daos/index.js";
+import { ProductClass } from "../daos/factory.js";
 
 const productService = new ProductClass();
 

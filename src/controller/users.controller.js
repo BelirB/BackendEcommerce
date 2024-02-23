@@ -1,12 +1,13 @@
-import { UserClass } from "../daos/index.js";
+import CustomController from "./custom.controller.js";
+import { usersService } from "../repository/service.js";
 
-class UsersController {
+export default class UsersController extends CustomController {
   constructor() {
-    this.service = new UserClass();
+    super(usersService);
   }
 
   getDataUserById = async id => {
-    const user = await this.service.getUserById(id);
+    const user = await this.service.getBy({_id: id});
 
     return {
       userId: id,
@@ -16,13 +17,8 @@ class UsersController {
       userRole: user?.role,
       userCart: user?.cart,
       ...this.handleAccess(user?.role)
-      // userName: req.session?.user?.first_name,
-      // first_name: req.session?.user?.first_name,
-      // last_name: req.session?.user?.last_name,
-      // email: req.session?.user?.email,
-      // userRole: req.session?.user?.role
     };
-  } // no es un Controlerrr de ROUTER
+  } // no es un Controler de ROUTER sino de middelware AUTH
 
   // AUXILIARY
   handleAccess = role => {
@@ -31,5 +27,3 @@ class UsersController {
     return access
   }
 }
-
-export default UsersController;
