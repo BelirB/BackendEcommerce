@@ -12,6 +12,7 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 
 // opts.mode = 'production' inicia prod.port 4000
+
 const configObject = {
   //conexion Mongo Atlas a traves de mongoose
   port: process.env.PORT,

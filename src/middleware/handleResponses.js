@@ -5,8 +5,7 @@ const {development} = configObject;
 const cookiesoptions = {
   maxAge: (1000*60*60*24),
   httpOnly: true,
-  //secure: true,
-  //sameSite:'strict'
+  
 }
 const pageError = {
   page: 'error',
@@ -54,8 +53,7 @@ const handleResponses = (req, res, next) => {
     //console.log("renderPageEstruc Object: ",renderObject);
     res.render(page, renderObject)
   };
-  res.renderError = (answer = "Ocurrio un error, vuelva a intentarlo", error) => res.renderPage(pageError.page, pageError.title, {answer: answer, answerDetail: error.toString(), ...additional});
-
+  
   res.renderPageTokenCookie = (token, page, title, configObject = {}) => res.tokenCookie(token).renderPage(page, title, configObject);
 
   next();

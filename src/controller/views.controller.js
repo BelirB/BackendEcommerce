@@ -43,17 +43,18 @@ class ViewsController {
       if (availability) apiUrl.searchParams.set("availability", availability);
   
       const data = await (await fetch(apiUrl)).json();
+      console.log(data);
   
       if (
         data.error ||
-        Number(page) > Number(data.data.totalPages) ||
+        Number(page) > Number(data.payload.totalPages) ||
         Number(page) < 0
       ) {
         return res.renderPage("products", "Productos", { productError: true });
       }
   
       // update product
-      const product = data.data.docs.map((prd) => ({
+      const product = data.payload.docs.map((prd) => ({
         ...prd,
         price: prd.price.toLocaleString("es-ES", { style: "decimal" }),
         unavailability: prd.stock === 0,
@@ -76,12 +77,12 @@ class ViewsController {
           category: await productsService.getCategorys(),
         },
         pageControl: {
-          page: data.data.page,
-          totalPages: data.data.totalPages,
-          hasPrevPage: data.data.hasPrevPage,
-          hasNextPage: data.data.hasNextPage,
-          prevLink: filterUrl("page") + data.data.prevLink,
-          nextLink: filterUrl("page") + data.data.nextLink,
+          page: data.payload.page,
+          totalPages: data.payload.totalPages,
+          hasPrevPage: data.payload.hasPrevPage,
+          hasNextPage: data.payload.hasNextPage,
+          prevLink: filterUrl("page") + data.payload.prevLink,
+          nextLink: filterUrl("page") + data.payload.nextLink,
           ascend: filterUrl("sort") + "&sort=asc",
           descend: filterUrl("sort") + "&sort=desc",
           disorderly: filterUrl("sort") + "&sort=disorderly",
@@ -91,7 +92,8 @@ class ViewsController {
         },
       });
     } catch (error) {
-      res.renderError(error);
+      // res.renderError(error);
+      console.log(error);
     }
   }
 

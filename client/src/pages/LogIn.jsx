@@ -13,8 +13,8 @@ const LogIn = () => {
   const { register, handleSubmit } = useForm({
     mode: "onBlur",
     defaultValues: {
-      email: 'email@prueba.com',
-      password: '123456'
+      email: 'emaildeprueba@hotmail.com',
+      password: '1234567'
     },
   });
 

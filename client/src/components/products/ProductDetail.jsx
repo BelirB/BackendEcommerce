@@ -1,7 +1,8 @@
+
 import { Link } from "react-router-dom"
 import "./product.scss"
 
-const ProductDetail = ({product}) => {
+const ProductDetail = ({product, cart, addProduct}) => {
   // console.log(product);
   return (
     <div className="product-container">
@@ -18,13 +19,14 @@ const ProductDetail = ({product}) => {
         </div>
         <div className="detail-display">
           <div className="detail-section">
-            <p className="cateory">{product.category}</p>
+            <p className="category">{product.category}</p>
             <p className="title">{product.title}</p>
             <p className="code">Cod: {product.code}</p>
             <p className="price">$ {product.price.toLocaleString("es-ES", { style: "decimal" })}</p>
           </div>
           <div className="add-section">
             <p>Stock: {product.stock}</p>
+            { (cart && product.stock > 0) && (<button onClick={() => addProduct()}>Agregar Producto al Carrito</button>)}
           </div>
         </div>
       </div>

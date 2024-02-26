@@ -2,7 +2,7 @@ import configObject from "./index.js";
 import passport from "passport";
 import jwt from "passport-jwt";
 //import GithubStrategy from "passport-github2";
-//import { UserClass } from "../dao/factory.js";
+//import { UserClass } from "../daos/factory.js";
 
 const JWTStrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
@@ -26,7 +26,6 @@ const initializePassport = () => {
       },
       async (jwt_payload, done) => {
         try {
-          //console.log(jwt_payload)
           return done(null, jwt_payload); // resultado token
         } catch (error) {
           return done(error);

@@ -77,7 +77,6 @@ function changeValidate (check) {
   }
 }
 
-// FIXME: coregir evento que deberia borrar mongo mensajes
 clearMessages.addEventListener('click', () => {
   messageLogs.innerHTML = '';
   socket.emit('clean', "dato")

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 const ProductsListCard = ({product}) => {
+
   return (
     <div className="card">
       <Link to={`/product/${product._id}`}>
@@ -14,6 +15,7 @@ const ProductsListCard = ({product}) => {
       </Link>
     </div>
   )
+  
 }
 
 export default ProductsListCard

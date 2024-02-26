@@ -1,22 +1,50 @@
-$fuenteT: 'Viga'; // titulo 1
-$fuenteH: 'Viga'; // titulos
-$fuenteP: 'Raleway'; // parrafo
-$fuenteH2: 'Roboto'; // parrafo
+$fuenteT: 'Viga'; 
+$fuenteH: 'Viga'; 
+$fuenteP: 'Raleway'; 
+$fuenteH2: 'Roboto'; 
 
-$color: #009bdd;;
 
-// Definicion de Gama de colores
+$color: #df0808;;
+
 $cblanco: white;
-$cgris1: #f8f9fa;
-$cgris2: #e9ecef;
-$cgris3: #dee2e6;
-$cgris4: #ced4da;
-$cgris5: #adb5bd;
-$cgris6: #6c757d;
-$cgris7: #495057;
-$cgris8: #343a40;
-$cgris9: #212529;
-$cnegro:  black;
+$cgris1: #f1f1f1;
+$cgris2: #c41212a2;
+$cgris3: #0b1016a4;
+$cgris4: #db1313;
+$cgris5: #e72525;
+$cgris6: #7d6c6c;
+$cgris7: #574949;
+$cgris8: #e21e1e;
+$cgris9: #292121;
+$cnegro:  rgb(10, 8, 8);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 $ccla1: saturate(lighten($color, 7%),7%);
 $ccla2: saturate(lighten($color, 14%),14%);

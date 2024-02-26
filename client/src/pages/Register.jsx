@@ -12,7 +12,7 @@ const Register = () => {
     mode: "onBlur",
     defaultValues: {
       email: 'emailx@prueba.com',
-      password: '7123456'
+      password: '675325'
     },
   });
   

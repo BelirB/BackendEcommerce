@@ -18,9 +18,8 @@ export default class UsersController extends CustomController {
       userCart: user?.cart,
       ...this.handleAccess(user?.role)
     };
-  } // no es un Controler de ROUTER sino de middelware AUTH
-
-  // AUXILIARY
+  } 
+  
   handleAccess = role => {
     const access = {}
       if (role === 'user_premium') access.accessPremium = true;

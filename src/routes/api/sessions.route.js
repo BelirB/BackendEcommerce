@@ -1,5 +1,5 @@
 import { Router } from "express";
-//import passport from "passport";
+import passport from "passport";
 
 import SessionsController from "../../controller/sessions.controller.js";
 import { handleAuth } from "../../middleware/handlePoliciesPASP.js";
@@ -12,14 +12,14 @@ const sControl = new SessionsController();
 router.post('/register', sControl.register);
 router.post('/login', sControl.login);
 router.get ('/logout', sControl.logout);
+router.get ('/user', handleAuth(['USER']), sControl.getUserSession);
 
 // TODO PRUEBAS
-router.get('/current', handleAuth(['USER']), (req, res) => {
+router.get('/current', handleAuth(['ADMIN']), (req, res) => {
   res.send({message: "Datos sensibles", reqUser: req.user})
 })
-
 // GITHUB API
-//router.get('/github', passport.authenticate('github', {scope:['user:email']}), sControl.github)
-//router.get('/githubcallback', passport.authenticate('github', {session: false, failureRedirect: '/'}), sControl.githubcallback)
+// router.get('/github', passport.authenticate('github', {scope:['user:email']}), sControl.github);
+// router.get('/githubcallback', passport.authenticate('github', {session: false, failureRedirect: '/'}), sControl.githubcallback);
 
 export default router;
