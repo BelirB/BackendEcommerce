@@ -1,6 +1,5 @@
 let validate = false;
 
-//Front Real Time Product
 const socket = io();
 
 const chatBox = document.querySelector('#chatBox');
@@ -19,7 +18,7 @@ chatBox.addEventListener('keyup', (e) => {
 }
 })
 
-// FIXME corregir el evento de cargado inicial
+
 chatBox.addEventListener('load', () => {
   socket.emit('init', "dato")
 })
@@ -76,6 +75,7 @@ function changeValidate (check) {
     checkUser.classList.add('visibleOff')
   }
 }
+
 
 clearMessages.addEventListener('click', () => {
   messageLogs.innerHTML = '';

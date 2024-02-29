@@ -8,11 +8,11 @@ const ProductForm = ({selectedProduct, onSubmitF }) => {
       status: true,
     }
   });
-  //console.log(selectedProduct);
+  
   const [idselected, setIdSelected] = useState('')
 
   useEffect(() => {
-    // Actualizar el estado del formulario cuando selectedProduct cambie
+    
     if (selectedProduct) {
         setValue('_id', selectedProduct._id || '');
         setValue('title', selectedProduct.title || '');

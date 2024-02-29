@@ -13,13 +13,13 @@ export const convertSort = (option, element) => {
   const objectReturn = {}
   objectReturn[element] = sortOptions[option];
   return objectReturn;
-} // return object
+} 
 
 export const convertAvailability = (availability) => {
   if (availability == "true") return { stock: { $gt: 0 } }
-} // return object
+} 
 
 export const checkCategory = async (category) => {
   const categories = await productService.getCategorys();
   return categories.includes(category);
-} // return boolean
+} 

@@ -11,9 +11,9 @@ export default function (server) {
   const messages = new MessageClass();
 
   io.on('connection', ios => {
-    //console.log("Nuevo cliente conectado");
+    
   
-    //REAL TIME PRODUCT
+    
     ios.on('nuevoProducto', async newProduct => {
       try {
         await products.addProduct(newProduct);

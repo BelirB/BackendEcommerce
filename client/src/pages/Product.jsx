@@ -22,8 +22,7 @@ const Product = () => {
       }
 
       const respJson = await resp.json();
-      // console.log(respJson)
-      
+    
       if (respJson?.isError === false) {
         setProduct(respJson.payload);
       } else {

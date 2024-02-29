@@ -72,7 +72,7 @@ const AddProducts = () => {
   //  }, [uriBase, token]);
 
   const handleProductClick = (product) => {
-    //console.log(product);
+   
     setSelectedProduct(product);
   };
 

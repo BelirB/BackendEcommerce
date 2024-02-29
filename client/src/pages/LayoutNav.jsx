@@ -43,11 +43,11 @@ const LayoutNav = () => {
       { !user && (
         <li><NavLink to="/">Inicio</NavLink></li>
       )}
-      <li><NavLink to="products/">Productos</NavLink></li>
+      <li><NavLink to="products/">Computadoras</NavLink></li>
       { user && ( <>
         <li><NavLink to="addproducts/"><BiSolidEdit/>*</NavLink></li>
         <li><NavLink to="chat/">*Chat</NavLink></li>
-        <li><NavLink to="refcolores/">Colores a Usar</NavLink></li>
+        <li><NavLink to="refcolores/">Extras</NavLink></li>
       </>)}
     </ul>
     <div className="user-widget">
@@ -58,7 +58,7 @@ const LayoutNav = () => {
               <li><NavLink to="order/"><BiCreditCard /></NavLink></li>
             </>)
           : (<>
-              <li><NavLink to="login/">LogIn <BiLogIn /></NavLink></li>
+              <li><NavLink to="login/">Login <BiLogIn /></NavLink></li>
               <li><NavLink to="register/">Registrarse<BiSolidUserPlus/></NavLink></li>
             </>)}
       </ul>

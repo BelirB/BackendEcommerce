@@ -41,7 +41,7 @@ class SessionsController {
       //   res.renderPage("register","Nuevo Registro", {answer: 'Ocurrio un error, vuelva a intentarlo' })
       // }
     }
-  }  
+  }  // Respuesta Visual
 
   login = async (req, res) => {
     const userData = validateFields(req.body, this.requieredfield.login);
@@ -79,7 +79,7 @@ class SessionsController {
     res.sendSuccess(req.user)
   }
 
-  
+  // GITHUB
   github = async (req,res)=>{}
   githubcallback = (req, res)=>{
     const token = createToken({id: req.user._id, role: req.user.role})

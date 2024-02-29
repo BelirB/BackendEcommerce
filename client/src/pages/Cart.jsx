@@ -16,11 +16,9 @@ const Cart = () => {
   const getCartProduct = async () => {
     if (user.cart) {
       try {
-        //console.log(token);
-        //console.log(user);
+        
         const resp = await cartService.getById(user.cart)
-        //console.log(resp);
-  
+        
         if (resp?.isError === false) {
           setCartProducts(resp.payload.products);
         } else {
@@ -62,7 +60,7 @@ const Cart = () => {
 
   return (
     <div className="page-container">
-      <h1 className="title">Carrito de: {user.name}</h1>
+      <h1 className="title">Tu carrito: {user.name}</h1>
       <CartList products={cartProducts} oneMoreClick={addOneUnit} oneLessClick={removeOneUnit} onXClick={removeItem}/>
       <Link className="button-center" to={'/Order'}> Realizar la Compra</Link>
     </div>

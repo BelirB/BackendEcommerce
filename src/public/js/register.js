@@ -10,12 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 password.addEventListener('keyup', (e) => {
-  if (password.value === pswRepeat.value && password.value.length >= 4) {
+  if (password.value === pswRepeat.value && password.value.length >= 5) {
     submitButton.disabled = false
     answer.innerHTML = ''
   } else {
     submitButton.disabled = true
-    answer.innerHTML = 'La contraseña debe tener una longitud mínima de 4 caracteres'
+    answer.innerHTML = 'La contraseña debe tener una longitud mínima de 5 caracteres'
     setTimeout(()=>{
       answer.innerHTML = ''
     },2000)
@@ -28,7 +28,7 @@ pswRepeat.addEventListener('keyup', (e) => {
     answer.innerHTML = ''
   } else {
     submitButton.disabled = true;
-    answer.innerHTML = 'La contraseña deben ser iguales'
+    answer.innerHTML = 'Las contraseña deben ser iguales'
     setTimeout(()=>{
       answer.innerHTML = ''
     },2000)

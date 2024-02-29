@@ -19,7 +19,6 @@ import { renderPage } from "../../helpers/responses.js";
 };*/
 
 // TOKEN COOKIES
-// ------------------------------------------------------------------------------------
 // authorization( ['USER', 'USER_PREMUIM'] )
 
 export const authorizationJwt = (roleArray) => {

@@ -23,6 +23,8 @@ const configObject = {
   uadmin_pass: process.env.USER_ADMIN_PASS,
   gh_client_id: process.env.GITHUB_CLIENT_ID,
   gh_client_secret: process.env.GITHUB_CLIENT_SECRET,
+  gmail_user_app: process.env.GMAIL_USER_APP,
+  gmail_pass_app: process.env.GMAIL_PASS_APP,
   development: opts.mode == 'development',
 
   connectDB: async () => {
@@ -38,8 +40,7 @@ const configObject = {
         store: MongoStore.create({
           mongoUrl: process.env.MONGO_URI,
           mongoOptions: {
-            //useNewUrlParser: true, // estas 2opciones luego ya son por defecto y no es necesario ponerlo
-            //useUnifiedTopology: true,
+            
           },
           ttl: 3600, // milisegundos --> hs
         }),
@@ -68,3 +69,5 @@ class MongoSingleton {
 }
 
 export default configObject
+
+

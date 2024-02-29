@@ -13,7 +13,7 @@ const LayoutFooter = () => {
     <img src="/img/logo.png" alt="Logotipo" />
     <p className="title">MarkPlace</p>
     <p className="descrip">
-    MarkPlace de Muestra.
+    Bienvenidos a Armed Bruyne.
     </p>
     <div className="social-links">
       <a
@@ -42,7 +42,7 @@ const LayoutFooter = () => {
     </div>
     <div className="copyright">
       &copy; Copyright {new Date().getFullYear() + ' - '}
-      <strong> Armed Bruyne</strong>.
+      <strong> @ArmedBruyne</strong>.
     </div>
   </footer>
   )

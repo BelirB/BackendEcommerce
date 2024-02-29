@@ -1,9 +1,8 @@
-
 import { Link } from "react-router-dom"
 import "./product.scss"
 
 const ProductDetail = ({product, cart, addProduct}) => {
-  // console.log(product);
+
   return (
     <div className="product-container">
       <nav aria-label="breadcrumb">

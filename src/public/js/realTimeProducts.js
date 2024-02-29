@@ -15,7 +15,7 @@ var swiper = new Swiper('.swiper-container', {
 formRTP.addEventListener('submit', (event) => {
   event.preventDefault();
 
-  // Producto armado
+  
   const prd = {
     title: d.querySelector('#frtitle').value,
     description: '...',
@@ -27,10 +27,10 @@ formRTP.addEventListener('submit', (event) => {
     thumbnail: d.querySelector('#frimage').value,
   };
 
-  // envia WebSocket (el prod armado)
+  
   socket.emit('nuevoProducto', prd);
 
-  // escucha WebSocket
+
   escuchar();
 });
 
@@ -53,7 +53,7 @@ function escuchar() {
     });
     divSwiper.innerHTML = armandoHtml;
 
-    // regenera carrusel
+    
     swiper = new Swiper('.swiper-container', {
       slidesPerView: 5,
       pagination: {

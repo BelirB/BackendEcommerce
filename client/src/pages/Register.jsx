@@ -12,7 +12,7 @@ const Register = () => {
     mode: "onBlur",
     defaultValues: {
       email: 'emailx@prueba.com',
-      password: '675325'
+      password: '6789621'
     },
   });
   
@@ -25,7 +25,7 @@ const Register = () => {
       };
       const respJson = await fetch(`${uriBase}api/sessions/register`, requestOptions);
       const resp = await respJson.json();
-      //console.log(resp);
+      
 
       if (resp?.isError === false) {
         Swal.fire({ icon: "success", text: resp.message }).then(() => {
@@ -35,7 +35,7 @@ const Register = () => {
         Swal.fire({ icon: "error", text: resp.message || "Error en el registro" });
       }
     } catch (error) {
-      // console.error(error);
+      
       Swal.fire({ icon: "error", text: "Error en el registro debido a un problema en el sistema" });
     }
   };

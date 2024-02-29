@@ -85,9 +85,7 @@ class CartManager {
     return (this.cart[id])
   }
 
-  // METODOS AUXILIARES
 
-  // revisa el Id maximo de los productos para iniciar su contador
   getId() {
     const exists = fs.existsSync(this.path);
     if (!exists) {
