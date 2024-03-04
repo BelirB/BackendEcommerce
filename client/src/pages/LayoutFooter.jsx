@@ -33,7 +33,7 @@ const LayoutFooter = () => {
         <BiLogoLinkedin />
       </a>
       <a
-        href="mailto:capu.blasco12@hotmail.com.ar"
+        href="mailto:brunoblasco403@gmail.com"
         target="_blank"
         rel="noreferrer"
       >

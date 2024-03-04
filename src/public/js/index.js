@@ -1,1 +1,0 @@
-document.querySelector('#copyright').innerHTML = `<p>&copy; Copyright ${new Date().getFullYear()}<span class="pstr"> Armado Bruyne</span>. Pcs Armadas</p>`
