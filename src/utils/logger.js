@@ -4,21 +4,22 @@ const {mode} = program.opts();
 
 const customOption = {
   levels: {
-    fatal: 0,
-    error: 1,
-    warning: 2,
-    info: 3,
-    debug: 5,
-    http: 4,
+    debug: 0,
+    http: 1,
+    info: 2,
+    warning: 3,
+    error: 4,
+    fatal: 5
     
   },
   colors: {
-    fatal:'red',
-    error:'yellow',
-    warning: 'yellow',
-    info: 'blue',
     debug: 'white',
     http: 'green',
+    info: 'blue',
+    warning: 'yellow',
+    error:'yellow',
+    fatal:'red',
+    
   }
 }
 const transportOption = {
