@@ -10,6 +10,7 @@ dotenv.config({
 import {connect} from 'mongoose';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import { logger } from '../utils/logger.js';
 
 // opts.mode = 'production' inicia prod.port 4000
 
@@ -28,8 +29,7 @@ const configObject = {
   development: opts.mode == 'development',
 
   connectDB: async () => {
-    //await mongoose.connect(process.env.MONGO_URI);
-    //console.log('Base de datos conectada');
+
     MongoSingleton.getInstance();
   },
 
@@ -42,7 +42,7 @@ const configObject = {
           mongoOptions: {
             
           },
-          ttl: 3600, // milisegundos --> hs
+          ttl: 3600, 
         }),
         secret: process.env.COOKIES_SECRET_CODE,
         resave: true,
@@ -60,10 +60,10 @@ class MongoSingleton {
 
   static getInstance() {
     if(!this.instance){
-      console.log('Conectado a Base de Datos');
+      logger.info('Conectado a Base de Datos');
       return this.instance = new MongoSingleton();
     }
-    console.log('Base de Datos ya conectada');
+    logger.info('La Base de Datos esta conectada');
     return this.instance;
   }
 }

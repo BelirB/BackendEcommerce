@@ -11,7 +11,7 @@ const Register = () => {
   const { register, handleSubmit, getValues, formState: { errors, isDirty, isValid } } = useForm({
     mode: "onBlur",
     defaultValues: {
-      email: 'emailx@prueba.com',
+      email: 'emailde@prueba.com',
       password: '6789621'
     },
   });

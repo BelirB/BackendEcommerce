@@ -21,7 +21,7 @@ class CartsController extends CustomController {
     } catch (error) {
       res.sendCatchError(error)
     }
-  } // + populate
+  } 
 
   getId = async (req, res) => {
     try {
@@ -38,7 +38,7 @@ class CartsController extends CustomController {
     } catch (error) {
       res.sendCatchError(error)
     }
-  } // + populate
+  } 
 
   addProduct = async (req, res) => {
     try{
@@ -75,7 +75,6 @@ class CartsController extends CustomController {
 
   updateProductQuantity = async (req, res) => {
     try {
-      console.log(req.body);
       const {cid, pid} = req.params;
       const {quantity} = req.body
       
@@ -161,7 +160,6 @@ class CartsController extends CustomController {
       const productsNotProcessed = [];
       //const producttoUpdated = [];
 
-      // Procesar articulos
       for (const item of cart.products) {
         
         const pid = item.product.toString();
@@ -193,8 +191,6 @@ class CartsController extends CustomController {
         detail.amount += item.quantity*product.price;
       }
 
-      console.log(req.user);
-      
       const resp = await ticketsService.create(detail)
 
       // await cartsService.updateCartProducts(eid, productsNotProcessed)
@@ -204,7 +200,7 @@ class CartsController extends CustomController {
 
       res.sendSuccess({detail: resp, productList, productsNotProcessed})
     } catch(error){
-      console.log(error);
+      logger.error(error);
       res.sendCatchError(error)
     }
   }

@@ -11,7 +11,6 @@ export const handleAuth = (policies) => {
     try {
       passport.authenticate('jwt', {session: false}, async function (err, user, info) {
         if (err) next(err)
-        //console.log(1111,user);
         if (user) {
           req.user = await uControl.getDataUserById(user.id)
         }
