@@ -1,15 +1,13 @@
-import { useContext } from "react";
-import { ContextConfig } from "../context/ContextConfig.jsx";
-import { ContextUser } from "../context/ContextUser.jsx";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import Swal from 'sweetalert2'
+import { Link } from "react-router-dom";
+import useSwalAlert from "../../hooks/useSwalAlert.jsx";
+import useSessionService from "../services/useSessionService.jsx";
+
 
 const LogIn = () => {
-  const { uriBase } = useContext( ContextConfig );
-  const { setToken } = useContext( ContextUser );
-  const navigate = useNavigate();
-
+  const { sessionLogIn } = useSessionService();
+  const { messageAndRedirect } = useSwalAlert()
+  
   const { register, handleSubmit } = useForm({
     mode: "onBlur",
     defaultValues: {
@@ -20,25 +18,16 @@ const LogIn = () => {
 
   const onSubmit = async data => {
     try {
-      const requestOptions = {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data),
-      };
-
-      const respJson = await fetch(`${uriBase}api/sessions/login`, requestOptions)
-      const resp = await respJson.json()
+      const resp = await sessionLogIn(data)
 
       if(resp?.isError === false) {
-        setToken(`Bearer ${resp.payload.token}`)
-        Swal.fire({icon: "success", text: resp.message}).then((res) => { navigate("/products/", {replace: true}) })
+        messageAndRedirect(resp.message, "success", "/products/")
       } else {
-        Swal.fire({icon: "error", text: "Acceso no autorizado"})
+        messageAndRedirect("Acceso no autorizado", "error")
       }
-
     } catch (error) {
       console.error(error);
-      Swal.fire({icon: "error", text: "Acceso no autorizado por un error en el sistema"})
+      messageAndRedirect("Acceso no autorizado por un error en el sistema", "error")
     }
   };
 
@@ -52,6 +41,7 @@ const LogIn = () => {
         <input type="password" {...register("password", { required: true})} />
         <button type="submit">Iniciar Sesión</button>
       </form>
+      <Link to='/recovery' className="recovery-link">Recupera tu contraseña</Link>
     </div>
   )
 }

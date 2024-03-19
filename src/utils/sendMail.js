@@ -1,11 +1,13 @@
 import nodemailer from 'nodemailer';
 import configObject from '../config/index.js';
 import __dirname from './dirname.js';
-import { logger } from './logger.js';
+//import { logger } from './logger.js';
+import Handlebars from 'handlebars';
+import fs from 'fs';
 
 const transport = nodemailer.createTransport({
   service: 'gmail',
-  port: 587,       
+  port: 587,        
   auth: {
     user: configObject.gmail_user_app,
     pass: configObject.gmail_pass_app
@@ -14,10 +16,6 @@ const transport = nodemailer.createTransport({
       rejectUnauthorized: false
   }
 })
-
-transport.verify()
-  .then(() => logger.info("gmail enviado de forma exitosa"))
-  .catch((error) => logger.info("Error Nodemailer: ",error));
   
 export const sendMail = async ( to, subject, bodyhtml) => {
   return await transport.sendMail({
@@ -27,3 +25,27 @@ export const sendMail = async ( to, subject, bodyhtml) => {
     html: bodyhtml,
   })
 }
+
+export const generateHtml = (options, layout = '') => {
+  
+  const template = Handlebars.compile(fs.readFileSync(__dirname+`/utils/sendMailPass/${layout}.hbs`, 'utf-8'))
+    
+  const html = template(options);
+
+  return html
+};
+
+export const sendEmailwithLayout = async (option, subject, layout) => {
+  try {
+    const to       = option.user.email
+    const bodyhtml = generateHtml(option, layout)
+
+    await sendMail(to, subject, bodyhtml)
+
+    return "E-mail send"
+  } catch (error) {
+    throw Error("Error sending email: " + error)
+  }
+}
+
+export default sendEmailwithLayout;

@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --watch src/server.js --mode development",
-    "start": "node src/server.js --mode production",
-    "startN20": "node --env-file .env src/server.js"
+    "nodemon": "nodemon src/app.js --mode development",
+    "dev": "node --watch src/app.js --mode development",
+    "start": "node src/app.js --mode production"
   },
   "keywords": [],
   "author": "",

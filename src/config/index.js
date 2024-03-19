@@ -11,7 +11,6 @@ import {connect} from 'mongoose';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import { logger } from '../utils/logger.js';
-
 // opts.mode = 'production' inicia prod.port 4000
 
 const configObject = {
@@ -40,9 +39,9 @@ const configObject = {
         store: MongoStore.create({
           mongoUrl: process.env.MONGO_URI,
           mongoOptions: {
-            
+    
           },
-          ttl: 3600, 
+          ttl: 3600,
         }),
         secret: process.env.COOKIES_SECRET_CODE,
         resave: true,
@@ -63,7 +62,7 @@ class MongoSingleton {
       logger.info('Conectado a Base de Datos');
       return this.instance = new MongoSingleton();
     }
-    logger.info('La Base de Datos esta conectada');
+    logger.info('La Base de datos esta conectada');
     return this.instance;
   }
 }

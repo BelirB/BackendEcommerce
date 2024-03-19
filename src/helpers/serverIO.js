@@ -13,7 +13,7 @@ export default function (server) {
 
   io.on('connection', ios => {
     logger.info("Nuevo cliente conectado");
-    
+  
     ios.on('nuevoProducto', async newProduct => {
       try {
         await products.addProduct(newProduct);

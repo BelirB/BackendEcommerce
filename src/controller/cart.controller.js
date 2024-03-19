@@ -159,7 +159,7 @@ class CartsController extends CustomController {
       const productList = [];
       const productsNotProcessed = [];
       //const producttoUpdated = [];
-
+      
       for (const item of cart.products) {
         
         const pid = item.product.toString();

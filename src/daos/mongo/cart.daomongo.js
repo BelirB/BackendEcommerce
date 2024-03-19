@@ -17,7 +17,7 @@ export default class CartDaoMongo  extends DaoMongo{
       $set: { lastupdated: new Date() }
     }
 
-    if (quantity === 0) { 
+    if (quantity === 0) {
       update.$pull = { products: { product: pId } };
     }
 

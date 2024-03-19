@@ -1,12 +1,12 @@
 import program from './config/commander.js';
 import configObj from './config/index.js'
 
-import {createServer} from 'node:http'
+//import {createServer} from 'node:http'
 import express from 'express';
 import cors from 'cors';
 import passport from 'passport';
 
-import serverIO from './helpers/serverIO.js';
+//import serverIO from './helpers/serverIO.js';
 import __dirname from './utils/dirname.js';
 import appRouter from './routes/index.js'
 import initializePassport from './config/passport.config.js';
@@ -15,12 +15,11 @@ import { addLogger, logger } from './utils/logger.js';
 
 const {mode} = program.opts();
 
-const port = process.env.PORT;
 const app = express();
-const server = createServer(app);
+//const server = createServer(app); //para IO server
 
 // configuraciones de la App
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors());
 
 //app.use(cookieParser(configObj.cookies_code))
 app.use(express.json());
@@ -31,8 +30,7 @@ app.use(addLogger)
 logger.info('Mode: ' + mode);
 app.use(handleResponses)
 
-// serverIo(server);
-serverIO(server);
+//serverIO(server);
 configObj.connectDB();
 
 // passport
@@ -41,8 +39,13 @@ initializePassport()
 
 app.use(appRouter);
 
-server.listen(port, () => {
-  logger.info(`Server andando en port ${port}`);
-});
+const port = process.env.PORT;
+//server.listen(port, (err) => { //para IO server
 
+export const appListen = () => {
+  return app.listen(port, (err) => {
+  if (err) { logger.fatal("Error fatal en server: ", err); }
+  logger.info(`Server funcionando en port ${port}`);
+});
+}
 //INICIAR: npm run dev:npm

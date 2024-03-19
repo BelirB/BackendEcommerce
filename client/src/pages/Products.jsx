@@ -8,18 +8,10 @@ const Products = () => {
   const { uriBase } = useContext(ContextConfig);
   //const { token } = useContext(ContextUser);
   const [products, setProducts] = useState([]);
- 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // const requestOptions = {
-          // method: "GET",
-          // headers: {
-          //   "Content-Type": "application/json",
-          //   Authorization: token,
-          // },
-        // };
-        //const resp = await fetch(`${uriBase}api/products/`, requestOptions);
+        
         const resp = await fetch(`${uriBase}api/products/`);
 
         if (!resp.ok) {

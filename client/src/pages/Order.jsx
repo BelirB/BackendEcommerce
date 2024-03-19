@@ -15,9 +15,8 @@ const Order = () => {
   const mailService = new MailService(uriBase, token);
   const [venta, setVenta] = useState(false)
   const [detail, setDetail] = useState(null);
-  
+
   const [products, setProducts] = useState(null);
-  
   const getCartProduct = async () => {
     if (user.cart) {
       try {
@@ -42,6 +41,7 @@ const Order = () => {
           setVenta(true)
           setDetail(resp.payload.detail)
           setProducts(resp.payload.productList)
+          
         } else {
           Swal.fire({ icon: "error", text: resp.message || "Error"})
         }
@@ -56,7 +56,6 @@ const Order = () => {
   }, [user])
 
   useEffect(()=>{
-    
   },[venta, user])
   // const aaa = new Date().toLocaleDateString()
 
@@ -69,10 +68,9 @@ const sendEmail = async () => {
       Swal.fire({ icon: "success", text: "Correo electrónico enviado correctamente"})
     } else {
       // Mostrar mensaje de error
-      Swal.fire({ icon: "error", text: "Error al enviar el correo electrónico: "+response.message})
+      Swal.fire({ icon: "error", text: "Error al enviar el correo electrónico: "+response.message});
     }
   } catch (error) {
-    
     Swal.fire({ icon: "error", text: "Error inesperado: "+error})
   }
 }

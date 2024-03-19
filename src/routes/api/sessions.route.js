@@ -13,14 +13,15 @@ router
   .post('/register', sControl.register)
   .post('/login', sControl.login)
   .get ('/logout', sControl.logout)
-  .get ('/user', handleAuth(['USER']), sControl.getUserSession)
-
+  .get ('/user', handleAuth(['USER', 'USER_PREMIUM', 'ADMIN']), sControl.getUserSession)
+  .post('/userrecovery', sControl.userRecovery)
+  .put ('/userrecovery', handleAuth(["USER"]), sControl.userRecoveryPassword)
 
 router.get('/current', handleAuth(['ADMIN']), (req, res) => {
   res.send({message: "Datos sensibles", reqUser: req.user})
 })
 
-// GITHUB API---------------------------------
+// GITHUB API
 //router.get('/github', passport.authenticate('github', {scope:['user:email']}), sControl.github)
 //router.get('/githubcallback', passport.authenticate('github', {session: false, failureRedirect: '/'}), sControl.githubcallback)
 
