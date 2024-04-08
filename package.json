@@ -5,10 +5,17 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "ptest01": "mocha test/products/products1.test.js",
+    "ptest02": "mocha test/products/products2.test.js",
+    "ptest03": "mocha test/products/products3.test.js",
+    "stest01": "mocha test/sessions/sessions1.test.js",
+    "stest02": "mocha test/sessions/sessions2.test.js",
+    "stest03": "mocha test/sessions/sessions3.test.js",
+    "supertest01": "mocha test/supertest1.js",
     "nodemon": "nodemon src/app.js --mode development",
     "dev": "node --watch src/app.js --mode development",
-    "start": "node src/app.js --mode production"
+    "start": "node src/app.js --mode production",
+    "swagger": "node src/swagger.js"
   },
   "keywords": [],
   "author": "",
@@ -37,6 +44,13 @@
     "passport-local": "^1.0.0",
     "session-file-store": "^1.5.0",
     "socket.io": "^4.7.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
     "winston": "^3.12.0"
+  },
+  "devDependencies": {
+    "chai": "^5.1.0",
+    "mocha": "^10.4.0",
+    "supertest": "^6.3.4"
   }
 }

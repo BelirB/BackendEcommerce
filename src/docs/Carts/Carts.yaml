@@ -1,0 +1,146 @@
+tags:
+  - name: Carts
+    description: Todo lo relacionado a los carritos. Los mismos se crean al registrarse un usuario.
+paths:
+  /api/carts:
+    get:
+      summary: Obtiene todos los carritos
+      security: []
+      tags:
+        - Carts
+      parameters:
+        - $ref: '#/components/parameters/populate'
+      responses:
+        "200":
+          description: Carritos obtenidos correctamente
+        "500":
+          $ref: '#/components/responses/500Server'
+  /api/carts/{eid}:
+    get:
+      summary: Obtiene todos los carritos
+      security: []
+      tags:
+        - Carts
+      parameters:
+        - name: eid
+          in: path
+          required: true
+          description: El eid del carrito que desea solicitar
+          schema: 
+            type: string
+            example: 65e0f23fa6f3413265c6277b
+        - in: query
+          name: populate
+          schema:
+            type: boolean
+          description: Por defecto = true, devuelve el carrito extendido
+      responses:
+        "200":
+          description: Carrito obtenido correctamente
+        "500":
+          $ref: '#/components/responses/500Server'
+  /api/carts/{cid}/product/{pid}:
+    post:
+      summary: Permite agregar un producto al carrito
+      security: []
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: El id del carrito que desea actualizar
+          schema: 
+            type: string
+            example: 65e0f23fa6f3413265c6277b
+        - name: pid
+          in: path
+          required: true
+          description: El id del producto a agregar
+          schema: 
+            type: string
+            example: 658f1d89418de4688411830c
+      responses:
+        "200":
+          description: Producto agregado correctamente
+        "404":
+          description: Carrito o producto no encontrado
+        "500":
+          $ref: '#/components/responses/500Server'
+    put:
+      summary: Permite descontar un producto al carrito
+      security: []
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: El id del carrito que desea actualizar
+          schema: 
+            type: string
+            example: 65e0f23fa6f3413265c6277b
+        - name: pid
+          in: path
+          required: true
+          description: El id del producto a descontar
+          schema: 
+            type: string
+            example: 658f1d89418de4688411830c
+      responses:
+        "200":
+          description: Producto descontado correctamente
+        "404":
+          description: Carrito o producto no encontrado
+        "500":
+          $ref: '#/components/responses/500Server'
+    delete:
+      summary: Permite eliminar un producto del carrito
+      security: []
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: El id del carrito que desea actualizar
+          schema: 
+            type: string
+            example: 65e0f23fa6f3413265c6277b
+        - name: pid
+          in: path
+          required: true
+          description: El id del producto a eliminar
+          schema: 
+            type: string
+            example: 658f1d89418de4688411830c
+      responses:
+        "200":
+          description: Producto eliminado correctamente
+        "404":
+          description: Carrito o producto no encontrado
+        "500":
+          $ref: '#/components/responses/500Server'
+  /api/carts/{eid}/purchase:
+    post:
+      summary: Gestiona la creaccion de ticket asociado. Devuelve el id del ticket, la lista de productos procesados y los que no se pudo procesar
+      security: []
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: El id del carrito que desea actualizar
+          schema: 
+            type: string
+            example: 65e0f23fa6f3413265c6277b
+      responses:
+        "200":
+          description: 
+        "204":
+          description: Carrito vacío
+        "404":
+          description: Carrito o producto no encontrado
+        "500":
+          $ref: '#/components/responses/500Server'
