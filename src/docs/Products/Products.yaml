@@ -1,0 +1,198 @@
+tags:
+  - name: Products
+    description: Todo lo relacionado a los productos
+
+paths:
+  /api/products:
+    get:
+      summary: Obtiene todos los productos
+      security: []
+      tags:
+        - Products
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/category'
+        - $ref: '#/components/parameters/availability'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        "200":
+          description: Productos obtenidos correctamente. Incluye la paginación. Por defecto se agrupan de a 10 articulos.
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                - $ref: '#/components/schemas/Response_Base'
+                properties:
+                  payload:
+                    type: object
+                    properties:
+                      docs:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Products'
+                      totalDocs:
+                        type: number
+                        description: Número total de documentos
+                      limit:
+                        type: number
+                        description: Límite de la paginación
+                      totalPages:
+                        type: number
+                        description: Número total de páginas
+                      page:
+                        type: number
+                        description: Página actual
+                      pagingCounter:
+                        type: number
+                        description: Contador de la paginación
+                      hasPrevPage:
+                        type: boolean
+                        description: Indica si hay páginas anteriores
+                      hasNextPage:
+                        type: boolean
+                        description: Indica si hay páginas siguientes
+                      prevLink:
+                        type: string
+                        description: Enlace a la página anterior (si aplica)
+                      nextLink:
+                        type: string
+                        description: Enlace a la página siguiente (si aplica)
+                example:
+                  statusCode: 200
+                  isError: false
+                  message: Operación Exitosa
+                  payload:
+                    docs: [{
+                      _id: 658f1d89418de4688411830e,
+                      title: PC Extreme,
+                      description: PC Armada Gamer Extreme I7 11700F /Cooler /RTX 4070 /B560M /16GB /1TB …,
+                      code: CUB22MHELIO918P,
+                      status: true,
+                      price: 6619300,
+                      stock: 5,
+                      owner: admin,
+                      category: pcsx,
+                      thumbnail: https://i.postimg.cc/NFwWPHCd/pcextreme.png,
+                      lastupdated: 2024-02-29T10:45:22.942+00:00
+                      },
+                      ... (resto de los productos)]
+                    totalDocs: 8,
+                    limit: 10,
+                    totalPages: 1,
+                    page: 1,
+                    pagingCounter: 1,
+                    hasPrevPage: false,
+                    hasNextPage: false,
+                    prevPage: null,
+                    nextPage: null,
+                    prevLink: ,
+                    nextLink: 
+        "500":
+          $ref: '#/components/responses/500Server'
+    post:
+      summary: Permite crear un producto. Necesita usuario Premium o Admin
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/requestBodies/Products"
+      responses:
+        "200":
+          description: Productos creado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Products"
+        "401":
+          description: Token Invalido. No se agrego el token de autorizacion, esta vencido o esta dañado.
+        "403":
+          description: Usuario no autorizado. Cuando intenta acceder a un lugar que no tiene permisos
+        "500":
+          $ref: '#/components/responses/500Server'
+  /api/products/{eid}:
+    get:
+      summary: Obtiene un productos a partir de un eid
+      security: []
+      tags:
+        - Products
+      parameters: 
+        - name: eid
+          in: path
+          required: true
+          description: El eid del producto que desea solicitar
+          schema: 
+            type: string
+            example: 658f1d89418de4688411830c
+      responses:
+        "200":
+          description: Producto obtenido correctamente.
+        "404":
+          description: Producto no encontrado.
+        "500":
+          description: Error interno del server
+    put:
+      summary: Actualiza un productos a partir de un eid. Necesita usuario Premium o Admin
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      parameters: 
+        - name: eid
+          in: path
+          required: true
+          description: El eid del producto que desea modificar
+          schema: 
+            type: string
+            example: 658f1d89418de4688411830c
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/requestBodies/Products"
+      responses:
+        "200":
+          description: Producto modificado correctamente.
+        "404":
+          description: Producto no encontrado.
+        "500":
+          description: Error interno del server
+    delete:
+      summary: Elimina un productos a partir de un eid. Necesita usuario Premium o Admin
+      security:
+        - bearerAuth: []
+      tags:
+        - Products
+      parameters: 
+        - name: eid
+          in: path
+          required: true
+          description: El eid del producto que desea eliminar
+          schema: 
+            type: string
+            example: 658f1d89418de4688411830c
+      responses:
+        "200":
+          description: Producto eliminado correctamente.
+        "404":
+          description: Producto no encontrado.
+        "500":
+          description: Error interno del server
+  /api/products/group/categorys:
+    get:
+      summary: Obtiene un listado de las Categorias de los productos
+      security: []
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Listado de categorias. Usar para listarlas
+        "500":
+          description: Error interno del server.
